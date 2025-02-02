@@ -1,12 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:signals_hooks/signals_hooks.dart';
+import 'package:community_charts_flutter/community_charts_flutter.dart'
+    as charts;
 
 import 'dart:math' as math;
 
 import '../widgets/activity_input.dart';
 import '../widgets/double_input.dart';
-import '../widgets/graph.dart';
 import 'base_calc.dart';
 
 class HalfLife extends BaseCalc {
@@ -90,71 +91,44 @@ class HalfLife extends BaseCalc {
           ((math.ln2 / halfLife()!) * -1);
     });
 
-    final graphSize = useSignal<Size>(const Size(800, 400));
-
-    final path$ = useComputed(() {
-      final path = Path();
-      final size = graphSize.value;
-
-      int resolution = 1;
+    final chartData$ = useComputed(() {
+      final results = <({double activity, double time})>[];
 
       final iA = initialActivity$() ?? 0;
       final fA = finalActivity$() ?? 0;
       final hL = halfLife$() ?? 10;
       final t = time$() ?? 10;
 
-      final maxActivity = math.max(iA, fA);
-      final maxTime = t;
+      // initial activity = iA
+      results.add((
+        activity: iA,
+        time: 0,
+      ));
 
-      final xScale = size.width / maxTime;
-      final yScale = size.height / maxActivity;
+      int increments = t.toInt();
+      for (var i = 0; i < increments; i++) {
+        double slope(double x) {
+          return iA *
+              math.pow(
+                math.e,
+                ((math.ln2 / hL) * x) * -1,
+              );
+        }
 
-      Offset point(double x, double y) {
-        return Offset(x * xScale, size.height - y * yScale);
+        results.add((
+          activity: slope(i.toDouble()),
+          time: i.toDouble(),
+        ));
       }
 
-      double slope(double x) {
-        return iA *
-            math.pow(
-              math.e,
-              ((math.ln2 / hL) * x) * -1,
-            );
-      }
+      // final activity = fA;
+      results.add((
+        activity: fA,
+        time: t.toDouble(),
+      ));
 
-      // start value = initial activity
-      path.moveTo(point(0, iA).dx, point(0, iA).dy);
-
-      // calculate slope of curve based on resolution
-      for (var i = 0; i < maxTime; i += resolution) {
-        path.lineTo(
-          point(i.toDouble(), slope(i.toDouble())).dx,
-          point(i.toDouble(), slope(i.toDouble())).dy,
-        );
-      }
-
-      // final value = final activity
-      path.lineTo(point(t, fA).dx, point(t, fA).dy);
-
-      // path.moveTo(0, 0);
-      // path.lineTo(size.width, size.height);
-
-      // // -- debug grid --
-      // // draw x axis
-      // for (var i = 0; i < xDivisions; i++) {
-      //   path.moveTo(i * resolution.toDouble(), 0);
-      //   path.lineTo(i * resolution.toDouble(), size.height);
-      // }
-
-      // // draw y axis
-      // for (var i = 0; i < yDivisions; i++) {
-      //   path.moveTo(0, i * resolution.toDouble());
-      //   path.lineTo(size.width, i * resolution.toDouble());
-      // }
-
-      return path;
+      return results;
     });
-
-    useReassemble(path$.recompute);
 
     return Form(
       key: formKey,
@@ -193,40 +167,31 @@ class HalfLife extends BaseCalc {
               label: 'Time',
               value: selected.value != 'time' ? time : time$,
             ),
-            // const Divider(),
-            // ElevatedButton(
-            //   onPressed: () {
-            //     if (formKey.currentState!.validate()) {
-            //       formKey.currentState!.save();
-            //     }
-            //   },
-            //   child: const Text('Calculate'),
-            // ),
-            Grapher(
-              name: 'Activity over Time',
-              width: graphSize.value.width,
-              height: graphSize.value.height,
-              yLabels: timeLabels(halfLife$() ?? 10),
-              xLabels: activityLabels(initialActivity$() ?? 10),
-              path: path$,
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: ClipRect(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(
+                    maxHeight: 400,
+                    maxWidth: double.infinity,
+                  ),
+                  child: charts.LineChart(
+                    [
+                      charts.Series<({double activity, double time}), double>(
+                        id: 'Activity over Time',
+                        domainFn: (data, _) => data.time,
+                        measureFn: (data, _) => data.activity,
+                        data: chartData$.value,
+                      ),
+                    ],
+                    animate: true,
+                  ),
+                ),
+              ),
             ),
           ],
         ),
       ),
     );
-  }
-}
-
-Iterable<String> activityLabels(double initialActivity) sync* {
-  for (var i = 0; i < 4; i++) {
-    yield (i * initialActivity / 3).toStringAsFixed(0);
-  }
-}
-
-Iterable<String> timeLabels(double halfLife) sync* {
-  // max = 6 * half life
-  final max = 6 * halfLife;
-  for (var i = 0; i < 6; i++) {
-    yield (i * max / 5).toStringAsFixed(2);
   }
 }
