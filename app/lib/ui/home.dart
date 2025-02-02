@@ -1,0 +1,43 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:signals_hooks/signals_hooks.dart';
+
+import 'calculators/base_calc.dart';
+import 'calculators/half_life.dart';
+import 'calc.dart';
+
+class Home extends HookWidget {
+  const Home({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final calculators = useSignal(const <BaseCalc>[
+      HalfLife(),
+    ]);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Rad Calc'),
+      ),
+      body: calculators.value.isEmpty
+          ? const Center(child: Text('No calculators found'))
+          : ListView.builder(
+              itemCount: calculators.value.length,
+              itemBuilder: (context, index) {
+                final calc = calculators.value[index];
+                return ListTile(
+                  title: Text(calc.name),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () {
+                    final nav = Navigator.of(context);
+                    nav.push(
+                      MaterialPageRoute(
+                        builder: (context) => CalcView(calc),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
+    );
+  }
+}
