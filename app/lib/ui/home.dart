@@ -5,7 +5,6 @@ import 'package:signals_hooks/signals_hooks.dart';
 
 import 'calculators/base_calc.dart';
 import 'calculators/half_life.dart';
-import 'calc.dart';
 
 class Home extends HookWidget {
   const Home({super.key, required this.brightness});
@@ -14,7 +13,7 @@ class Home extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final calculators = useSignal(const <BaseCalc>[
+    final calculators = useSignal(<BaseCalc>[
       HalfLife(),
     ]);
     return Scaffold(
@@ -44,7 +43,7 @@ class Home extends HookWidget {
                     final nav = Navigator.of(context);
                     nav.push(
                       MaterialPageRoute(
-                        builder: (context) => CalcView(calc),
+                        builder: (context) => calc,
                       ),
                     );
                   },

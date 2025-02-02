@@ -22,7 +22,9 @@ class DoubleInput extends HookWidget {
     if (readonly) {
       return ListTile(
         title: Text(label),
-        subtitle: Text(result.value?.toStringAsPrecision(3) ?? 'N/A'),
+        subtitle: SelectableText(
+          result.value == null ? 'N/A' : result.value!.toStringAsPrecision(3),
+        ),
         trailing: IconButton(
           icon: const Icon(Icons.copy),
           onPressed: () async {
@@ -41,7 +43,9 @@ class DoubleInput extends HookWidget {
         ),
       );
     }
-    final controller = useTextEditingController(text: result.value?.toString());
+    final controller = useTextEditingController(
+      text: result.value?.toStringAsPrecision(3),
+    );
     return ListTile(
       title: Text(label),
       subtitle: TextFormField(

@@ -38,7 +38,10 @@ class ActivityInput extends DoubleInput {
 
     final raw = useExistingSignal(value);
     final controller = useTextEditingController(
-      text: convertFromCuries(selected.value, raw.value ?? 0).toString(),
+      text: convertFromCuries(
+        selected.value,
+        raw.value ?? 0,
+      ).toStringAsPrecision(3),
     );
 
     useSignalEffect(() {
@@ -67,10 +70,12 @@ class ActivityInput extends DoubleInput {
     if (super.readonly) {
       return ListTile(
         title: Text(label),
-        subtitle: Text(raw.value == null
+        subtitle: SelectableText(raw.value == null
             ? 'N/A'
-            : convertToCuries(selected.value, raw.value!)
-                .toStringAsPrecision(3)),
+            : convertToCuries(
+                selected.value,
+                raw.value!,
+              ).toStringAsPrecision(3)),
         trailing: selector,
       );
     }
