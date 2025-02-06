@@ -8,11 +8,11 @@ import 'dart:math' as math;
 import '../widgets/double_input.dart';
 import 'base_calc.dart';
 
-class LineSource extends BaseCalc {
-  LineSource({super.key});
+class PointSource extends BaseCalc {
+  PointSource({super.key});
 
   @override
-  String get name => 'Line Source';
+  String get name => 'Point Source';
 
   @override
   final variants = computed(() {
@@ -21,7 +21,6 @@ class LineSource extends BaseCalc {
       'exposureRate2': 'Exposure Rate 2',
       'distance1': 'Distance 1',
       'distance2': 'Distance 2',
-      'length': 'Length',
     };
   });
 
@@ -32,7 +31,6 @@ class LineSource extends BaseCalc {
   final exposureRate2 = signal<double?>(null);
   final distance1 = signal<double?>(null);
   final distance2 = signal<double?>(null);
-  final length = signal<double?>(null);
 
   late final nonZeroFinal = computed<double>(() {
     final val = exposureRate2() ?? 0;
@@ -48,8 +46,7 @@ class LineSource extends BaseCalc {
       return null;
     }
 
-    final result = (exposureRate2()! * distance2()!)
-    / distance1()!;
+    final result = (exposureRate2()! * math.pow(distance2()!/ distance1()!, 2));
     return result;
   });
 
@@ -60,8 +57,7 @@ class LineSource extends BaseCalc {
       return null;
     }
 
-    final result = (exposureRate1()! * distance1()!)
-    / distance2()!;
+    final result = (exposureRate1()! * math.pow(distance2()!/ distance1()!, 2));
     return result;
   });
 
@@ -72,8 +68,8 @@ class LineSource extends BaseCalc {
       return null;
     }
 
-    final result = (exposureRate2()! * distance2()!)
-    / exposureRate1()!;
+    final result = math.sqrt((exposureRate2()!/ exposureRate1()!) * math.pow(distance2()!,2));
+  
     return result;
   });
 
@@ -84,8 +80,7 @@ class LineSource extends BaseCalc {
       return null;
     }
 
-    final result = (exposureRate1()! * distance1()!)
-    / exposureRate2()!;
+    final result  = math.sqrt((exposureRate1()!/ exposureRate2()!) * math.pow(distance1()!,2));
     return result;
   });
 
@@ -106,7 +101,7 @@ class LineSource extends BaseCalc {
     int increments = d1.toInt();
     for (var i = 0; i < increments; i++) {
       double slope(double x) {
-        return eR1 * d1 / d2;
+        return eR1 * math.pow((d1 / d2),2);
       }
 
       results.add((
