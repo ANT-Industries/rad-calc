@@ -16,10 +16,9 @@ class Home extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final calculators = useSignal(<BaseCalc>[
-      HalfLife(),
+      buildHalfLife(),
       PointSource(),
       LineSource(),
-      
     ]);
     return Scaffold(
       appBar: AppBar(

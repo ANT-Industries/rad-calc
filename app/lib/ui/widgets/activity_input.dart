@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:signals_hooks/signals_hooks.dart';
 
+import '../calculators/base_calc.dart';
 import 'double_input.dart';
 
 enum ActivityType {
@@ -30,6 +31,13 @@ class ActivityInput extends DoubleInput {
     required super.value,
     required super.label,
   });
+
+  static ActivityInput fromCoreValue(CoreValue<double> value) {
+    return ActivityInput(
+      value: value.source,
+      label: value.label,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

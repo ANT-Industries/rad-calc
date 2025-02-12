@@ -3,6 +3,203 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:signals_hooks/signals_hooks.dart';
+import 'package:community_charts_flutter/community_charts_flutter.dart'
+    as charts;
+
+import '../../data/signals/saved_signal.dart';
+
+class BaseCalcBuilder {
+  static late BaseCalcBuilder current;
+  String name;
+
+  BaseCalcBuilder(this.name) {
+    current = this;
+  }
+  List<BaseCalculation> _calculations = [];
+  BaseCalculation? _defaultCalculation;
+
+  BaseCalcWidget build() {
+    return BaseCalcWidget(this);
+  }
+
+  BaseCalculation addCalculation(String name) {
+    final calc = BaseCalculation(name);
+    _calculations.add(calc);
+    _defaultCalculation ??= calc;
+    return calc;
+  }
+
+  void setDefaultCalculation(String name) {
+    _defaultCalculation = _calculations.firstWhere((calc) => calc.name == name);
+  }
+
+  BaseCalculation get defaultCalc => _defaultCalculation ?? _calculations.first;
+
+  List<BaseCalculation> get calculations => _calculations;
+}
+
+typedef CoreValueBuilder<T extends ReadonlySignal> = Widget Function(
+  BuildContext,
+  T,
+);
+
+abstract class CoreValue<V> {
+  ReadonlySignal<V> get source;
+
+  String get label;
+
+  CoreValueBuilder<ReadonlySignal<V>> get builder;
+
+  V call() => source.value;
+
+  Widget build() {
+    return Watch(
+      key: ValueKey(source),
+      (context) {
+        return builder(context, source);
+      },
+    );
+  }
+}
+
+T safeCalc<T extends num>(T Function() cb, T fallback) {
+  try {
+    final result = cb();
+    if (result.isNaN) return fallback;
+    return result.isFinite ? result : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
+
+class Input<T> extends CoreValue<T> {
+  @override
+  Signal<T> source;
+
+  @override
+  String label;
+
+  @override
+  CoreValueBuilder<ReadonlySignal<T>> builder;
+
+  Input(this.label, T initialValue, this.builder)
+      : source = SavedSignal<T>(
+          '${BaseCalcBuilder.current.name}|$label',
+          initialValue,
+        );
+}
+
+class Output<T> extends CoreValue<T> {
+  @override
+  ReadonlySignal<T> source;
+
+  @override
+  String label;
+
+  @override
+  CoreValueBuilder<ReadonlySignal<T>> builder;
+
+  Output(this.label, T Function() cb, this.builder) : source = computed<T>(cb);
+
+  Input<T>? input;
+}
+
+class Chart {
+  String label;
+  ReadonlySignal<List<({double x, double y})>> source;
+  Chart(this.label, this.source);
+
+  Widget build() {
+    return Watch((context) {
+      return Padding(
+        padding: const EdgeInsets.all(8),
+        child: ClipRect(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(
+              maxHeight: 400,
+              maxWidth: double.infinity,
+            ),
+            child: charts.LineChart(
+              [
+                charts.Series<({double x, double y}), double>(
+                  id: label,
+                  domainFn: (data, _) => data.y,
+                  measureFn: (data, _) => data.x,
+                  data: source.watch(context),
+                ),
+              ],
+              animate: true,
+            ),
+          ),
+        ),
+      );
+    });
+  }
+}
+
+class BaseCalculation {
+  String name;
+  BaseCalculation(this.name);
+  List<Input> inputs = [];
+  List<Output> outputs = [];
+  List<Chart> charts = [];
+}
+
+class BaseCalcWidget extends BaseCalc {
+  final BaseCalcBuilder base;
+  BaseCalcWidget(this.base, {super.key});
+
+  @override
+  String get name => base.name;
+
+  @override
+  late Signal<String> variant = signal(base.defaultCalc.name);
+
+  @override
+  late Computed<Map<String, String>> variants = computed(() {
+    return {
+      for (var calc in base.calculations) calc.name: calc.name,
+    };
+  });
+
+  @override
+  late Computed<Map<String, List<Widget>>> inputs = computed(() {
+    return {
+      for (var calc in base.calculations)
+        calc.name: [
+          for (var input in calc.inputs) input.build(),
+        ],
+    };
+  });
+
+  @override
+  late Computed<Map<String, List<Widget>>> outputs = computed(() {
+    return {
+      for (var calc in base.calculations)
+        calc.name: [
+          for (var output in calc.outputs) output.build(),
+          for (var chart in calc.charts) chart.build(),
+        ],
+    };
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    useSignalEffect(() {
+      final current = variant.value;
+      batch(() {
+        for (final calc in base.calculations) {
+          if (current == calc.name) {
+            for (final output in calc.outputs.where((e) => e.input != null)) {
+              output.input!.source.value = output.source.value;
+            }
+          }
+        }
+      });
+    });
+    return super.build(context);
+  }
+}
 
 abstract class BaseCalc extends HookWidget {
   const BaseCalc({super.key});
