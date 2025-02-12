@@ -25,7 +25,7 @@ class PointSource extends BaseCalc {
   });
 
   @override
-  final variant = signal('exp_rate_2');
+  final variant = signal('exposureRate2');
 
   final exposureRate1 = signal<double?>(null);
   final exposureRate2 = signal<double?>(null);
@@ -46,7 +46,7 @@ class PointSource extends BaseCalc {
       return null;
     }
 
-    final result = (exposureRate2()! * math.pow(distance2()!/ distance1()!, 2));
+    final result = (exposureRate2()! * math.pow((distance2()!/ distance1()!), 2));
     return result;
   });
 
@@ -56,8 +56,8 @@ class PointSource extends BaseCalc {
     if (exposureRate1() == null || distance1() == null || distance2() == null) {
       return null;
     }
-
-    final result = (exposureRate1()! * math.pow(distance2()!/ distance1()!, 2));
+  
+    final result = (exposureRate1()! * math.pow((distance1()!/ distance2()!), 2));
     return result;
   });
 
@@ -123,7 +123,7 @@ class PointSource extends BaseCalc {
     return DoubleInput(
       key: ValueKey((variant.value, 'exposureRate1')),
       label: 'Exposure Rate 1',
-      value: variant.value != 'exposure1' ? exposureRate1 : exposureRate1$,
+      value: variant.value != 'exposureRate1' ? exposureRate1 : exposureRate1$,
     );
   });
 
@@ -131,7 +131,7 @@ class PointSource extends BaseCalc {
     return DoubleInput(
       key: ValueKey((variant.value, 'exposureRate2')),
       label: 'Exposure Rate 2',
-      value: variant.value != 'exposure2' ? exposureRate2 : exposureRate2$,
+      value: variant.value != 'exposureRate2' ? exposureRate2 : exposureRate2$,
     );
   });
 
