@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import '../widgets/activity_input.dart';
 import '../widgets/double_input.dart';
+import '../widgets/time_input.dart';
 import 'base_calc.dart';
 
 BaseCalc buildHalfLife() {
@@ -34,7 +35,7 @@ BaseCalc buildHalfLife() {
     'Half Life',
     10.0,
     (val) {
-      return DoubleInput(
+      return TimeInput(
         label: 'Half Life',
         value: val,
       );
@@ -45,7 +46,7 @@ BaseCalc buildHalfLife() {
     'Time',
     10.0,
     (val) {
-      return DoubleInput(
+      return TimeInput(
         label: 'Time',
         value: val,
       );
