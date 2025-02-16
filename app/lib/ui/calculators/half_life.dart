@@ -10,7 +10,7 @@ BaseCalc buildHalfLife() {
   final initialActivity = Input<double>(
     'Initial Activity',
     0.0,
-    (context, val) {
+    (val) {
       return ActivityInput(
         label: 'Initial Activity',
         value: val,
@@ -20,7 +20,7 @@ BaseCalc buildHalfLife() {
   final finalActivity = Input<double>(
     'Final Activity',
     0.0,
-    (context, val) {
+    (val) {
       return ActivityInput(
         label: 'Final Activity',
         value: val,
@@ -30,7 +30,7 @@ BaseCalc buildHalfLife() {
   final halfLife = Input<double>(
     'Half Life',
     10.0,
-    (context, val) {
+    (val) {
       return DoubleInput(
         label: 'Half Life',
         value: val,
@@ -40,7 +40,7 @@ BaseCalc buildHalfLife() {
   final time = Input<double>(
     'Time',
     10.0,
-    (context, val) {
+    (val) {
       return DoubleInput(
         label: 'Time',
         value: val,
@@ -55,7 +55,7 @@ BaseCalc buildHalfLife() {
             (math.ln2 / halfLife()) * time(),
           );
     }, 0);
-  }, (context, val) {
+  }, (val) {
     return ActivityInput(
       label: 'Initial Activity',
       value: val,
@@ -70,7 +70,7 @@ BaseCalc buildHalfLife() {
             ((math.ln2 / halfLife()) * time()) * -1,
           );
     }, 0);
-  }, (context, val) {
+  }, (val) {
     return ActivityInput(
       label: 'Final Activity',
       value: val,
@@ -84,7 +84,7 @@ BaseCalc buildHalfLife() {
             initialActivity() / finalActivity(),
           );
     }, 0);
-  }, (context, val) {
+  }, (val) {
     return DoubleInput(
       label: 'Half Life',
       value: val,
@@ -98,7 +98,7 @@ BaseCalc buildHalfLife() {
           )) /
           ((math.ln2 / halfLife()) * -1);
     }, 0);
-  }, (context, val) {
+  }, (val) {
     return DoubleInput(
       label: 'Time',
       value: val,

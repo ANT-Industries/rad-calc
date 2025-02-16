@@ -15,6 +15,7 @@ class BaseCalcBuilder {
   BaseCalcBuilder(this.name) {
     current = this;
   }
+
   List<BaseCalculation> _calculations = [];
   BaseCalculation? _defaultCalculation;
 
@@ -38,10 +39,7 @@ class BaseCalcBuilder {
   List<BaseCalculation> get calculations => _calculations;
 }
 
-typedef CoreValueBuilder<T extends ReadonlySignal> = Widget Function(
-  BuildContext,
-  T,
-);
+typedef CoreValueBuilder<T extends ReadonlySignal> = Widget Function(T);
 
 abstract class CoreValue<V> {
   ReadonlySignal<V> get source;
@@ -55,9 +53,7 @@ abstract class CoreValue<V> {
   Widget build() {
     return Watch(
       key: ValueKey(source),
-      (context) {
-        return builder(context, source);
-      },
+      (context) => builder(source),
     );
   }
 }
