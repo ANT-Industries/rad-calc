@@ -132,20 +132,6 @@ class TimeInput extends DoubleInput {
 Rational convertToSeconds(TimeType type, Rational val) {
   return switch (type) {
     TimeType.s => val,
-    TimeType.min => val * 60.toRational(),
-    TimeType.hr => val * 60.toRational() * 60.toRational(),
-    TimeType.d => val * 60.toRational() * 60.toRational() * 24.toRational(),
-    TimeType.y => val *
-        60.toRational() *
-        60.toRational() *
-        24.toRational() *
-        365.25.toRational(),
-  };
-}
-
-Rational convertFromSeconds(TimeType type, Rational val) {
-  return switch (type) {
-    TimeType.s => val,
     TimeType.min => val / 60.toRational(),
     TimeType.hr => val / 60.toRational() / 60.toRational(),
     TimeType.d => val / 60.toRational() / 60.toRational() / 24.toRational(),
@@ -153,6 +139,20 @@ Rational convertFromSeconds(TimeType type, Rational val) {
         60.toRational() /
         60.toRational() /
         24.toRational() /
+        365.25.toRational(),
+  };
+}
+
+Rational convertFromSeconds(TimeType type, Rational val) {
+  return switch (type) {
+    TimeType.s => val,
+    TimeType.min => val * 60.toRational(),
+    TimeType.hr => val * 60.toRational() * 60.toRational(),
+    TimeType.d => val * 60.toRational() * 60.toRational() * 24.toRational(),
+    TimeType.y => val *
+        60.toRational() *
+        60.toRational() *
+        24.toRational() *
         365.25.toRational(),
   };
 }
