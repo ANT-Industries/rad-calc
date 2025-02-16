@@ -1,3 +1,5 @@
+import 'package:app/ui/calculators/line_source.dart';
+import 'package:app/ui/calculators/point_source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:signals/signals_flutter.dart';
@@ -14,7 +16,9 @@ class Home extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final calculators = useSignal(<BaseCalc>[
-      HalfLife(),
+      buildHalfLife(),
+      PointSource(),
+      LineSource(),
     ]);
     return Scaffold(
       appBar: AppBar(
