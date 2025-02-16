@@ -7,6 +7,7 @@ import 'base_calc.dart';
 
 BaseCalc buildHalfLife() {
   final builder = BaseCalcBuilder('Half Life');
+
   final initialActivity = Input<double>(
     'Initial Activity',
     0.0,
@@ -17,6 +18,7 @@ BaseCalc buildHalfLife() {
       );
     },
   );
+
   final finalActivity = Input<double>(
     'Final Activity',
     0.0,
@@ -27,6 +29,7 @@ BaseCalc buildHalfLife() {
       );
     },
   );
+
   final halfLife = Input<double>(
     'Half Life',
     10.0,
@@ -37,6 +40,7 @@ BaseCalc buildHalfLife() {
       );
     },
   );
+
   final time = Input<double>(
     'Time',
     10.0,
@@ -47,6 +51,7 @@ BaseCalc buildHalfLife() {
       );
     },
   );
+
   final solveForInitialActivity = Output<double>('Initial Activity', () {
     return safeCalc(() {
       return finalActivity() *
@@ -62,6 +67,7 @@ BaseCalc buildHalfLife() {
     );
   })
     ..input = initialActivity;
+
   final solveForFinalActivity = Output<double>('Final Activity', () {
     return safeCalc(() {
       return initialActivity() *
@@ -77,6 +83,7 @@ BaseCalc buildHalfLife() {
     );
   })
     ..input = finalActivity;
+
   final solveForHalfLife = Output<double>('Half Life', () {
     return safeCalc(() {
       return (time() * math.ln2) /
@@ -91,6 +98,7 @@ BaseCalc buildHalfLife() {
     );
   })
     ..input = halfLife;
+
   final solveForTime = Output<double>('Time', () {
     return safeCalc(() {
       return (math.log(
@@ -161,6 +169,7 @@ BaseCalc buildHalfLife() {
       halfLife: halfLife,
       time: time,
     ));
+
   builder.addCalculation('Final Activity')
     ..inputs.add(initialActivity)
     ..inputs.add(halfLife)
@@ -172,6 +181,7 @@ BaseCalc buildHalfLife() {
       halfLife: halfLife,
       time: time,
     ));
+
   builder.addCalculation('Half Life')
     ..inputs.add(initialActivity)
     ..inputs.add(finalActivity)
@@ -183,6 +193,7 @@ BaseCalc buildHalfLife() {
       halfLife: solveForHalfLife,
       time: time,
     ));
+
   builder.addCalculation('Time')
     ..inputs.add(initialActivity)
     ..inputs.add(finalActivity)
@@ -194,6 +205,8 @@ BaseCalc buildHalfLife() {
       halfLife: halfLife,
       time: solveForTime,
     ));
+
   builder.setDefaultCalculation('Half Life');
+
   return builder.build();
 }
