@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
 import 'dart:math' as math;
 
@@ -159,7 +160,7 @@ BaseCalc buildHalfLife() {
     }));
   }
 
-  builder.addCalculation('Initial Activity')
+  builder.addCalculation('Initial Activity', Icons.calculate)
     ..inputs.add(finalActivity)
     ..inputs.add(halfLife)
     ..inputs.add(time)
@@ -171,7 +172,7 @@ BaseCalc buildHalfLife() {
       time: time,
     ));
 
-  builder.addCalculation('Final Activity')
+  builder.addCalculation('Final Activity', Icons.calculate)
     ..inputs.add(initialActivity)
     ..inputs.add(halfLife)
     ..inputs.add(time)
@@ -183,7 +184,7 @@ BaseCalc buildHalfLife() {
       time: time,
     ));
 
-  builder.addCalculation('Half Life')
+  builder.addCalculation('Half Life', Icons.timer)
     ..inputs.add(initialActivity)
     ..inputs.add(finalActivity)
     ..inputs.add(time)
@@ -195,7 +196,7 @@ BaseCalc buildHalfLife() {
       time: time,
     ));
 
-  builder.addCalculation('Time')
+  builder.addCalculation('Time', Icons.timer)
     ..inputs.add(initialActivity)
     ..inputs.add(finalActivity)
     ..inputs.add(halfLife)

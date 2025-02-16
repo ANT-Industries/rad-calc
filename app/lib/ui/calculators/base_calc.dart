@@ -30,8 +30,8 @@ class BaseCalcBuilder {
     return base;
   }
 
-  BaseCalculation addCalculation(String name) {
-    final calc = BaseCalculation(name);
+  BaseCalculation addCalculation(String name, IconData icon) {
+    final calc = BaseCalculation(name, icon);
     _calculations.add(calc);
     _defaultCalculation ??= calc;
     return calc;
@@ -142,7 +142,8 @@ class Chart {
 
 class BaseCalculation<R> {
   String name;
-  BaseCalculation(this.name);
+  IconData icon;
+  BaseCalculation(this.name, this.icon);
   List<Input> inputs = [];
   List<Output> outputs = [];
   List<Chart> charts = [];
@@ -162,6 +163,13 @@ class BaseCalcWidget extends BaseCalc {
   late Computed<Map<String, String>> variants = computed(() {
     return {
       for (var calc in base.calculations) calc.name: calc.name,
+    };
+  });
+
+  @override
+  late Computed<Map<String, IconData>> icons = computed(() {
+    return {
+      for (var calc in base.calculations) calc.name: calc.icon,
     };
   });
 
@@ -213,6 +221,8 @@ abstract class BaseCalc extends HookWidget {
 
   Computed<Map<String, String>> get variants;
 
+  Computed<Map<String, IconData>> get icons;
+
   Computed<Map<String, List<Widget>>> get inputs;
 
   Computed<Map<String, List<Widget>>> get outputs;
@@ -229,28 +239,140 @@ abstract class BaseCalc extends HookWidget {
       selected.value;
       formKey.currentState?.reset();
     });
-
+    Widget child = Form(
+      key: formKey,
+      child: LayoutBuilder(
+        builder: (context, dimens) {
+          if (dimens.maxWidth > 800) {
+            return Row(
+              children: [
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.topLeft,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          for (var input in inputs()[selected()]!)
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: input,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                const VerticalDivider(width: 1),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.topLeft,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          for (var output in outputs()[selected()]!)
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: output,
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                for (var input in inputs()[selected()]!)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: input,
+                  ),
+                const Divider(),
+                for (var output in outputs()[selected()]!)
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: output,
+                  ),
+              ],
+            ),
+          );
+        },
+      ),
+    );
+    if (variants().length >= 2) {
+      return LayoutBuilder(
+        builder: (context, dimens) {
+          if (dimens.maxWidth > 600) {
+            return Scaffold(
+              appBar: AppBar(
+                title: Text(name),
+              ),
+              body: Row(
+                children: [
+                  NavigationRail(
+                    selectedIndex:
+                        variants().keys.toList().indexOf(selected.value),
+                    onDestinationSelected: (index) {
+                      selected.value = variants().keys.toList()[index];
+                    },
+                    labelType: NavigationRailLabelType.all,
+                    destinations: [
+                      for (var key in variants().keys)
+                        NavigationRailDestination(
+                          label: Text(variants()[key]!),
+                          icon: Icon(icons()[key]!),
+                        ),
+                    ],
+                  ),
+                  Expanded(child: child),
+                ],
+              ),
+            );
+          }
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(name),
+            ),
+            bottomNavigationBar: NavigationBar(
+              selectedIndex: variants().keys.toList().indexOf(selected.value),
+              onDestinationSelected: (index) {
+                selected.value = variants().keys.toList()[index];
+              },
+              destinations: [
+                for (var key in variants().keys)
+                  NavigationDestination(
+                    label: variants()[key]!,
+                    icon: Icon(icons()[key]!),
+                  ),
+              ],
+            ),
+            body: child,
+          );
+        },
+      );
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(name),
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
-          child: CupertinoSlidingSegmentedControl(
-            groupValue: selected.value,
-            children: {
-              for (var key in variants().keys) key: Text(variants()[key]!),
-            },
-            onValueChanged: (value) {
-              selected.value = value!;
-            },
-          ),
-        ),
       ),
       body: Form(
         key: formKey,
         child: SingleChildScrollView(
           child: Column(
             children: [
+              CupertinoSlidingSegmentedControl(
+                groupValue: selected.value,
+                children: {
+                  for (var key in variants().keys) key: Text(variants()[key]!),
+                },
+                onValueChanged: (value) {
+                  selected.value = value!;
+                },
+              ),
+              const Divider(),
               for (var input in inputs()[selected()]!)
                 Padding(
                   padding: const EdgeInsets.all(8.0),
