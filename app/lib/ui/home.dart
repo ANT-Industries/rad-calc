@@ -7,9 +7,14 @@ import 'calculators/base_calc.dart';
 import 'calculators/half_life.dart';
 
 class Home extends HookWidget {
-  const Home({super.key, required this.brightness});
+  const Home({
+    super.key,
+    required this.brightness,
+    required this.theme,
+  });
 
   final Signal<Brightness> brightness;
+  final Signal<Color> theme;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +34,20 @@ class Home extends HookWidget {
     final size = MediaQuery.of(context).size;
     final canShowDetails = size.width > 600;
     final showOnlyList = !canShowDetails || hideList.value;
-    // final showList = (canShowDetails && !hideList.value) || !canShowDetails;
+    final allColors = useComputed<List<Color>>(() {
+      return [
+        Colors.red,
+        Colors.green,
+        Colors.blue,
+        Colors.purple,
+        Colors.orange,
+        Colors.teal,
+        Colors.pink,
+        Colors.indigo,
+        Colors.amber,
+        Colors.cyan,
+      ];
+    });
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rad Calc'),
@@ -48,6 +66,16 @@ class Home extends HookWidget {
               brightness.value = brightness.value == Brightness.light
                   ? Brightness.dark
                   : Brightness.light;
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.palette),
+            color: theme.value,
+            onPressed: () {
+              final index = allColors.value.indexOf(theme.value);
+              final next =
+                  allColors.value[(index + 1) % allColors.value.length];
+              theme.value = next;
             },
           ),
         ],

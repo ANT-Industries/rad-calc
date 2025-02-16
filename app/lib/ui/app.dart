@@ -20,12 +20,40 @@ class App extends HookWidget {
           ? ThemeMode.light
           : ThemeMode.dark;
     });
+    final themeColor = useSignal<Color>(Colors.red);
+    final lightColorScheme = useComputed(() {
+      return ColorScheme.fromSeed(
+        seedColor: themeColor.value,
+        brightness: Brightness.light,
+      );
+    });
+    final lightTheme = useComputed(() {
+      return ThemeData.from(
+        colorScheme: lightColorScheme.value,
+      ).copyWith(
+        scaffoldBackgroundColor: lightColorScheme.value.surface,
+      );
+    });
+    final darkColorScheme = useComputed(() {
+      return ColorScheme.fromSeed(
+        seedColor: themeColor.value,
+        brightness: Brightness.dark,
+      );
+    });
+    final darkTheme = useComputed(() {
+      return ThemeData.from(
+        colorScheme: darkColorScheme.value,
+      );
+    });
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Home(brightness: brightness),
+      home: Home(
+        brightness: brightness,
+        theme: themeColor,
+      ),
       themeMode: themeMode.value,
-      theme: ThemeData.light(),
-      darkTheme: ThemeData.dark(),
+      theme: lightTheme.value,
+      darkTheme: darkTheme.value,
     );
   }
 }

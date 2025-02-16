@@ -114,6 +114,7 @@ class Chart {
 
   Widget build() {
     return Watch((context) {
+      final colors = Theme.of(context).colorScheme;
       return Padding(
         padding: const EdgeInsets.all(8),
         child: ClipRect(
@@ -129,6 +130,7 @@ class Chart {
                   domainFn: (data, _) => data.y,
                   measureFn: (data, _) => data.x,
                   data: source.watch(context),
+                  seriesColor: charts.ColorUtil.fromDartColor(colors.primary),
                 ),
               ],
               animate: true,
