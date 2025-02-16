@@ -46,16 +46,23 @@ class BaseCalcBuilder {
   List<BaseCalculation> get calculations => _calculations;
 }
 
-typedef CoreValueBuilder<T extends ReadonlySignal, R> = R Function(T);
+typedef CoreValueBuilder<T extends ReadonlySignal> = Widget Function(T);
 
-abstract class CoreValue<V, R> {
+abstract class CoreValue<V> {
   ReadonlySignal<V> get source;
 
   String get label;
 
-  CoreValueBuilder<ReadonlySignal<V>, Widget> get builder;
+  CoreValueBuilder<ReadonlySignal<V>> get builder;
 
   V call() => source.value;
+
+  Widget build() {
+    return Watch(
+      key: ValueKey(source),
+      (context) => builder(source),
+    );
+  }
 }
 
 T safeCalc<T extends num>(T Function() cb, T fallback) {
@@ -68,7 +75,7 @@ T safeCalc<T extends num>(T Function() cb, T fallback) {
   }
 }
 
-class Input<T, R> extends CoreValue<T, R> {
+class Input<T> extends CoreValue<T> {
   @override
   SavedSignal<T> source;
 
@@ -76,7 +83,7 @@ class Input<T, R> extends CoreValue<T, R> {
   String label;
 
   @override
-  CoreValueBuilder<ReadonlySignal<T>, Widget> builder;
+  CoreValueBuilder<ReadonlySignal<T>> builder;
 
   Input(this.label, T initialValue, this.builder)
       : source = SavedSignal<T>(
@@ -85,7 +92,7 @@ class Input<T, R> extends CoreValue<T, R> {
         );
 }
 
-class Output<T, R> extends CoreValue<T, R> {
+class Output<T> extends CoreValue<T> {
   @override
   ReadonlySignal<T> source;
 
@@ -93,11 +100,11 @@ class Output<T, R> extends CoreValue<T, R> {
   String label;
 
   @override
-  CoreValueBuilder<ReadonlySignal<T>, Widget> builder;
+  CoreValueBuilder<ReadonlySignal<T>> builder;
 
   Output(this.label, T Function() cb, this.builder) : source = computed<T>(cb);
 
-  Input<T, R>? input;
+  Input<T>? input;
 }
 
 class Chart {
@@ -136,8 +143,8 @@ class Chart {
 class BaseCalculation<R> {
   String name;
   BaseCalculation(this.name);
-  List<Input<dynamic, R>> inputs = [];
-  List<Output<dynamic, R>> outputs = [];
+  List<Input> inputs = [];
+  List<Output> outputs = [];
   List<Chart> charts = [];
 }
 
@@ -163,11 +170,7 @@ class BaseCalcWidget extends BaseCalc {
     return {
       for (var calc in base.calculations)
         calc.name: [
-          for (var input in calc.inputs)
-            Watch(
-              key: ValueKey(input.source),
-              (context) => input.builder(input.source),
-            ),
+          for (var input in calc.inputs) input.build(),
         ],
     };
   });
@@ -177,11 +180,7 @@ class BaseCalcWidget extends BaseCalc {
     return {
       for (var calc in base.calculations)
         calc.name: [
-          for (var output in calc.outputs)
-            Watch(
-              key: ValueKey(output.source),
-              (context) => output.builder(output.source),
-            ),
+          for (var output in calc.outputs) output.build(),
           for (var chart in calc.charts) chart.build(),
         ],
     };

@@ -25,7 +25,7 @@ class TimeInput extends DoubleInput {
     required super.label,
   });
 
-  static TimeInput fromCoreValue(CoreValue<double, Widget> value) {
+  static TimeInput fromCoreValue(CoreValue<double> value) {
     return TimeInput(
       value: value.source,
       label: value.label,

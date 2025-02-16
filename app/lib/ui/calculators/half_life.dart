@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:signals/signals_flutter.dart';
 import 'dart:math' as math;
 
@@ -10,7 +9,7 @@ import 'base_calc.dart';
 BaseCalc buildHalfLife() {
   final builder = BaseCalcBuilder('Half Life');
 
-  final initialActivity = Input<double, Widget>(
+  final initialActivity = Input<double>(
     'Initial Activity',
     0.0,
     (val) {
@@ -21,7 +20,7 @@ BaseCalc buildHalfLife() {
     },
   );
 
-  final finalActivity = Input<double, Widget>(
+  final finalActivity = Input<double>(
     'Final Activity',
     0.0,
     (val) {
@@ -32,7 +31,7 @@ BaseCalc buildHalfLife() {
     },
   );
 
-  final halfLife = Input<double, Widget>(
+  final halfLife = Input<double>(
     'Half Life',
     10.0,
     (val) {
@@ -43,7 +42,7 @@ BaseCalc buildHalfLife() {
     },
   );
 
-  final time = Input<double, Widget>(
+  final time = Input<double>(
     'Time',
     10.0,
     (val) {
@@ -54,8 +53,7 @@ BaseCalc buildHalfLife() {
     },
   );
 
-  final solveForInitialActivity =
-      Output<double, Widget>('Initial Activity', () {
+  final solveForInitialActivity = Output<double>('Initial Activity', () {
     return safeCalc(() {
       return finalActivity() *
           math.pow(
@@ -69,9 +67,9 @@ BaseCalc buildHalfLife() {
       value: val,
     );
   })
-        ..input = initialActivity;
+    ..input = initialActivity;
 
-  final solveForFinalActivity = Output<double, Widget>('Final Activity', () {
+  final solveForFinalActivity = Output<double>('Final Activity', () {
     return safeCalc(() {
       return initialActivity() *
           math.pow(
@@ -87,7 +85,7 @@ BaseCalc buildHalfLife() {
   })
     ..input = finalActivity;
 
-  final solveForHalfLife = Output<double, Widget>('Half Life', () {
+  final solveForHalfLife = Output<double>('Half Life', () {
     return safeCalc(() {
       return (time() * math.ln2) /
           math.log(
@@ -102,7 +100,7 @@ BaseCalc buildHalfLife() {
   })
     ..input = halfLife;
 
-  final solveForTime = Output<double, Widget>('Time', () {
+  final solveForTime = Output<double>('Time', () {
     return safeCalc(() {
       return (math.log(
             finalActivity() / initialActivity(),
@@ -118,10 +116,10 @@ BaseCalc buildHalfLife() {
     ..input = time;
 
   Chart activityOverTime({
-    required CoreValue<double, Widget> initialActivity,
-    required CoreValue<double, Widget> finalActivity,
-    required CoreValue<double, Widget> halfLife,
-    required CoreValue<double, Widget> time,
+    required CoreValue<double> initialActivity,
+    required CoreValue<double> finalActivity,
+    required CoreValue<double> halfLife,
+    required CoreValue<double> time,
   }) {
     return Chart('Activity Over Time', computed(() {
       final results = <({double x, double y})>[];
