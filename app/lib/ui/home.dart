@@ -16,6 +16,14 @@ class Home extends HookWidget {
     final calculators = useSignal(<BaseCalc>[
       buildHalfLife(),
     ]);
+    final searchController = useTextEditingController();
+    final query = useExistingSignal(searchController.toSignal());
+    final filtered = useComputed(() {
+      final q = query.value.text.toLowerCase();
+      return calculators.value.where((e) {
+        return e.name.toLowerCase().contains(q);
+      }).toList();
+    });
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rad Calc'),
@@ -30,26 +38,46 @@ class Home extends HookWidget {
           ),
         ],
       ),
-      body: calculators.value.isEmpty
-          ? const Center(child: Text('No calculators found'))
-          : ListView.builder(
-              itemCount: calculators.value.length,
-              itemBuilder: (context, index) {
-                final calc = calculators.value[index];
-                return ListTile(
-                  title: Text(calc.name),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    final nav = Navigator.of(context);
-                    nav.push(
-                      MaterialPageRoute(
-                        builder: (context) => calc,
-                      ),
-                    );
-                  },
-                );
-              },
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8),
+            child: TextField(
+              controller: searchController,
+              decoration: const InputDecoration(
+                labelText: 'Search',
+                prefixIcon: Icon(Icons.search),
+                border: OutlineInputBorder(),
+              ),
             ),
+          ),
+          Expanded(
+            child: () {
+              if (filtered.value.isEmpty) {
+                return const Center(child: Text('No calculators found'));
+              }
+              return ListView.builder(
+                itemCount: filtered.value.length,
+                itemBuilder: (context, index) {
+                  final calc = filtered.value[index];
+                  return ListTile(
+                    title: Text(calc.name),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () {
+                      final nav = Navigator.of(context);
+                      nav.push(
+                        MaterialPageRoute(
+                          builder: (context) => calc,
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            }(),
+          ),
+        ],
+      ),
     );
   }
 }
