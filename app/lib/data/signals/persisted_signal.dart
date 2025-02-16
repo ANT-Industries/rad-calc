@@ -15,7 +15,7 @@ class PersistedSignal<T> extends FlutterSignal<T> with PersistedSignalMixin<T> {
   });
 
   @override
-  final String key;
+  String key;
 
   @override
   final KeyValueStore store;

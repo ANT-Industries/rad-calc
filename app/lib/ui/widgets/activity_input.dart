@@ -32,7 +32,7 @@ class ActivityInput extends DoubleInput {
     required super.label,
   });
 
-  static ActivityInput fromCoreValue(CoreValue<double> value) {
+  static ActivityInput fromCoreValue(CoreValue<double, Widget> value) {
     return ActivityInput(
       value: value.source,
       label: value.label,
