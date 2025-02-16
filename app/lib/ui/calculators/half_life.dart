@@ -7,31 +7,46 @@ import 'base_calc.dart';
 
 BaseCalc buildHalfLife() {
   final builder = BaseCalcBuilder('Half Life');
-  final initialActivity =
-      Input<double>('Initial Activity', 0.0, (context, val) {
-    return ActivityInput(
-      label: 'Initial Activity',
-      value: val,
-    );
-  });
-  final finalActivity = Input<double>('Final Activity', 0.0, (context, val) {
-    return ActivityInput(
-      label: 'Final Activity',
-      value: val,
-    );
-  });
-  final halfLife = Input<double>('Half Life', 10.0, (context, val) {
-    return DoubleInput(
-      label: 'Half Life',
-      value: val,
-    );
-  });
-  final time = Input<double>('Time', 10.0, (context, val) {
-    return DoubleInput(
-      label: 'Time',
-      value: val,
-    );
-  });
+  final initialActivity = Input<double>(
+    'Initial Activity',
+    0.0,
+    (context, val) {
+      return ActivityInput(
+        label: 'Initial Activity',
+        value: val,
+      );
+    },
+  );
+  final finalActivity = Input<double>(
+    'Final Activity',
+    0.0,
+    (context, val) {
+      return ActivityInput(
+        label: 'Final Activity',
+        value: val,
+      );
+    },
+  );
+  final halfLife = Input<double>(
+    'Half Life',
+    10.0,
+    (context, val) {
+      return DoubleInput(
+        label: 'Half Life',
+        value: val,
+      );
+    },
+  );
+  final time = Input<double>(
+    'Time',
+    10.0,
+    (context, val) {
+      return DoubleInput(
+        label: 'Time',
+        value: val,
+      );
+    },
+  );
   final solveForInitialActivity = Output<double>('Initial Activity', () {
     return safeCalc(() {
       return finalActivity() *
