@@ -1,11 +1,13 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:rational/rational.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:signals_hooks/signals_hooks.dart';
 
 class DoubleInput extends HookWidget {
-  final ReadonlySignal<double?> value;
+  final ReadonlySignal<Rational?> value;
   final String label;
 
   const DoubleInput({
@@ -19,11 +21,20 @@ class DoubleInput extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final result = useExistingSignal(value);
+
+    String desc(Rational val) {
+      return val.toDecimal(scaleOnInfinitePrecision: 10).toString();
+    }
+
+    final controller = useTextEditingController(
+      text: result.value == null ? null : desc(result.value!),
+    );
+
     if (readonly) {
       return ListTile(
         title: Text(label),
         subtitle: SelectableText(
-          result.value == null ? 'N/A' : result.value!.toStringAsPrecision(3),
+          result.value == null ? 'N/A' : desc(result.value!),
         ),
         trailing: IconButton(
           icon: const Icon(Icons.copy),
@@ -43,9 +54,7 @@ class DoubleInput extends HookWidget {
         ),
       );
     }
-    final controller = useTextEditingController(
-      text: result.value?.toStringAsPrecision(3),
-    );
+
     return ListTile(
       title: Text(label),
       subtitle: TextFormField(
@@ -53,22 +62,24 @@ class DoubleInput extends HookWidget {
         readOnly: readonly,
         validator: (value) {
           if (readonly) return null;
-          if (value == null || value.isEmpty || num.tryParse(value) == null) {
+          if (value == null ||
+              value.isEmpty ||
+              Rational.tryParse(value) == null) {
             return 'Please enter a valid number';
           }
           return null;
         },
         onSaved: (value) {
           final target = this.value;
-          if (target is Signal<double?>) {
-            target.value = num.parse(value!).toDouble();
+          if (target is Signal<Rational?>) {
+            target.value = Rational.tryParse(value!);
           }
         },
         onChanged: (value) {
           if (readonly) return;
           final target = this.value;
-          if (target is Signal<double?>) {
-            target.value = num.tryParse(value)?.toDouble();
+          if (target is Signal<Rational?>) {
+            target.value = Rational.tryParse(value);
           }
         },
         onEditingComplete: () {

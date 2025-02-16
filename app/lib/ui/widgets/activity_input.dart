@@ -1,8 +1,11 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:rational/rational.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:signals_hooks/signals_hooks.dart';
 
+import '../../data/numbers/rational.dart';
 import '../calculators/base_calc.dart';
 import 'double_input.dart';
 
@@ -32,7 +35,7 @@ class ActivityInput extends DoubleInput {
     required super.label,
   });
 
-  static ActivityInput fromCoreValue(CoreValue<double> value) {
+  static ActivityInput fromCoreValue(CoreValue<Rational> value) {
     return ActivityInput(
       value: value.source,
       label: value.label,
@@ -44,20 +47,24 @@ class ActivityInput extends DoubleInput {
     final options = useSignal(ActivityType.values);
     final selected = useSignal<ActivityType>(ActivityType.ci);
 
+    String desc(Rational val) {
+      return val.toDecimal(scaleOnInfinitePrecision: 10).toString();
+    }
+
     final raw = useExistingSignal(value);
     final controller = useTextEditingController(
-      text: convertFromCuries(
+      text: desc(convertFromCuries(
         selected.value,
-        raw.value ?? 0,
-      ).toStringAsPrecision(3),
+        raw.value ?? Rational.zero,
+      )),
     );
 
     useSignalEffect(() {
       selected.value;
-      controller.text = untracked(() => convertFromCuries(
+      controller.text = untracked(() => desc(convertFromCuries(
             selected.value,
-            raw.value ?? 0,
-          ).toString());
+            raw.value ?? Rational.zero,
+          )));
     });
 
     final Widget selector = DropdownButton(
@@ -80,10 +87,10 @@ class ActivityInput extends DoubleInput {
         title: Text(label),
         subtitle: SelectableText(raw.value == null
             ? 'N/A'
-            : convertToCuries(
+            : desc(convertToCuries(
                 selected.value,
                 raw.value!,
-              ).toStringAsPrecision(3)),
+              ))),
         trailing: selector,
       );
     }
@@ -93,26 +100,28 @@ class ActivityInput extends DoubleInput {
       subtitle: TextFormField(
         controller: controller,
         validator: (value) {
-          if (value == null || value.isEmpty || num.tryParse(value) == null) {
+          if (value == null ||
+              value.isEmpty ||
+              Rational.tryParse(value) == null) {
             return 'Please enter a valid number';
           }
           return null;
         },
         onSaved: (value) {
           final target = this.value;
-          if (target is Signal<double?>) {
+          if (target is Signal<Rational?>) {
             target.value = convertToCuries(
               selected.value,
-              num.tryParse(value!)?.toDouble() ?? 0,
+              Rational.tryParse(value!) ?? Rational.zero,
             );
           }
         },
         onChanged: (value) {
           final target = this.value;
-          if (target is Signal<double?>) {
+          if (target is Signal<Rational?>) {
             target.value = convertToCuries(
               selected.value,
-              num.tryParse(value)?.toDouble() ?? 0,
+              Rational.tryParse(value) ?? Rational.zero,
             );
           }
         },
@@ -127,44 +136,44 @@ class ActivityInput extends DoubleInput {
   }
 }
 
-double dpsToBq(double val) => val;
+Rational dpsToBq(Rational val) => val;
 
-double bqToDps(double val) => val;
+Rational bqToDps(Rational val) => val;
 
-double bqToCi(double val) => val * 3.7e10;
+Rational bqToCi(Rational val) => val * 3.7e10.toRational();
 
-double ciToBq(double val) => val / 3.7e10;
+Rational ciToBq(Rational val) => val / 3.7e10.toRational();
 
-double convertToCuries(ActivityType type, double val) {
+Rational convertToCuries(ActivityType type, Rational val) {
   return switch (type) {
     ActivityType.dps => bqToDps(bqToCi(val)),
-    ActivityType.dpm => val / 2.22e12,
+    ActivityType.dpm => val / 2.22e12.toRational(),
     ActivityType.ci => val,
-    ActivityType.pCi => val * 1e12,
-    ActivityType.nCi => val * 1e9,
-    ActivityType.uCi => val * 1e6,
-    ActivityType.mCi => val * 1e3,
+    ActivityType.pCi => val * 1e12.toRational(),
+    ActivityType.nCi => val * 1e9.toRational(),
+    ActivityType.uCi => val * 1e6.toRational(),
+    ActivityType.mCi => val * 1e3.toRational(),
     ActivityType.bq => bqToCi(val),
-    ActivityType.kBq => bqToCi(val) / 1e3,
-    ActivityType.mBq => bqToCi(val) / 1e6,
-    ActivityType.gBq => bqToCi(val) / 1e9,
-    ActivityType.tBq => bqToCi(val) / 1e12,
+    ActivityType.kBq => bqToCi(val) / 1e3.toRational(),
+    ActivityType.mBq => bqToCi(val) / 1e6.toRational(),
+    ActivityType.gBq => bqToCi(val) / 1e9.toRational(),
+    ActivityType.tBq => bqToCi(val) / 1e12.toRational(),
   };
 }
 
-double convertFromCuries(ActivityType type, double val) {
+Rational convertFromCuries(ActivityType type, Rational val) {
   return switch (type) {
     ActivityType.dps => ciToBq(dpsToBq(val)),
-    ActivityType.dpm => val * 2.22e12,
+    ActivityType.dpm => val * 2.22e12.toRational(),
     ActivityType.ci => val,
-    ActivityType.pCi => val / 1e12,
-    ActivityType.nCi => val / 1e9,
-    ActivityType.uCi => val / 1e6,
-    ActivityType.mCi => val / 1e3,
+    ActivityType.pCi => val / 1e12.toRational(),
+    ActivityType.nCi => val / 1e9.toRational(),
+    ActivityType.uCi => val / 1e6.toRational(),
+    ActivityType.mCi => val / 1e3.toRational(),
     ActivityType.bq => ciToBq(val),
-    ActivityType.kBq => ciToBq(val) * 1e3,
-    ActivityType.mBq => ciToBq(val) * 1e6,
-    ActivityType.gBq => ciToBq(val) * 1e9,
-    ActivityType.tBq => ciToBq(val) * 1e12,
+    ActivityType.kBq => ciToBq(val) * 1e3.toRational(),
+    ActivityType.mBq => ciToBq(val) * 1e6.toRational(),
+    ActivityType.gBq => ciToBq(val) * 1e9.toRational(),
+    ActivityType.tBq => ciToBq(val) * 1e12.toRational(),
   };
 }

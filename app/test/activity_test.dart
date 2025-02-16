@@ -1,5 +1,7 @@
+import 'package:app/data/numbers/rational.dart';
 import 'package:app/ui/widgets/activity_input.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:rational/rational.dart';
 
 void main() {
   group("convert type to curries", () {
@@ -11,8 +13,9 @@ void main() {
         5: 1.35e-10,
       };
       for (final entry in values.entries) {
-        final result = convertToCuries(ActivityType.dps, entry.key);
-        expect(isSame(result, entry.value, 10), true);
+        final result =
+            convertToCuries(ActivityType.dps, entry.key.toRational());
+        expect(isSame(result, entry.value.toRational(), 10), true);
       }
     });
     test("dpm to curries", () {
@@ -23,8 +26,9 @@ void main() {
         5: 2.25e12,
       };
       for (final entry in values.entries) {
-        final result = convertToCuries(ActivityType.dps, entry.key);
-        expect(isSame(result, entry.value, 10), true);
+        final result =
+            convertToCuries(ActivityType.dps, entry.key.toRational());
+        expect(isSame(result, entry.value.toRational(), 10), true);
       }
     });
     test("curries to curries", () {
@@ -35,8 +39,8 @@ void main() {
         0.1: 0.1,
       };
       for (final entry in values.entries) {
-        final result = convertToCuries(ActivityType.ci, entry.key);
-        expect(isSame(result, entry.value, 10), true);
+        final result = convertToCuries(ActivityType.ci, entry.key.toRational());
+        expect(isSame(result, entry.value.toRational(), 10), true);
       }
     });
     test("mCi to curries", () {
@@ -47,8 +51,9 @@ void main() {
         1000000: 1000,
       };
       for (final entry in values.entries) {
-        final result = convertToCuries(ActivityType.mCi, entry.key);
-        expect(isSame(result, entry.value, 10), true);
+        final result =
+            convertToCuries(ActivityType.mCi, entry.key.toRational());
+        expect(isSame(result, entry.value.toRational(), 10), true);
       }
     });
     test("bq to curries", () {
@@ -59,8 +64,8 @@ void main() {
         5: 1.35e-10,
       };
       for (final entry in values.entries) {
-        final result = convertToCuries(ActivityType.bq, entry.key);
-        expect(isSame(result, entry.value, 10), true);
+        final result = convertToCuries(ActivityType.bq, entry.key.toRational());
+        expect(isSame(result, entry.value.toRational(), 10), true);
       }
     });
     test("mBq to curries", () {
@@ -71,13 +76,14 @@ void main() {
         5: 1.35e-4,
       };
       for (final entry in values.entries) {
-        final result = convertToCuries(ActivityType.mBq, entry.key);
-        expect(isSame(result, entry.value, 10), true);
+        final result =
+            convertToCuries(ActivityType.mBq, entry.key.toRational());
+        expect(isSame(result, entry.value.toRational(), 10), true);
       }
     });
   });
 }
 
-bool isSame(double a, double b, int precision) {
-  return ((a - b).abs() < 1 / (10 ^ precision));
+bool isSame(Rational a, Rational b, int precision) {
+  return ((a - b).abs() < (1 / (10 ^ precision)).toRational());
 }

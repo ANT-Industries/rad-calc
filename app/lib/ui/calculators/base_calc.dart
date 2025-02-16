@@ -85,10 +85,17 @@ class Input<T> extends CoreValue<T> {
   @override
   CoreValueBuilder<ReadonlySignal<T>> builder;
 
-  Input(this.label, T initialValue, this.builder)
-      : source = SavedSignal<T>(
+  Input(
+    this.label,
+    T initialValue,
+    this.builder, {
+    T Function(String)? getValue,
+    String Function(T)? setValue,
+  }) : source = SavedSignal<T>(
           '${BaseCalcBuilder.current.name}|$label',
           initialValue,
+          getValue: getValue,
+          setValue: setValue,
         );
 }
 
@@ -127,8 +134,8 @@ class Chart {
               [
                 charts.Series<({double x, double y}), double>(
                   id: label,
-                  domainFn: (data, _) => data.y,
-                  measureFn: (data, _) => data.x,
+                  domainFn: (data, _) => data.x,
+                  measureFn: (data, _) => data.y,
                   data: source.watch(context),
                   seriesColor: charts.ColorUtil.fromDartColor(colors.primary),
                 ),

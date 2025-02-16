@@ -1,67 +1,77 @@
 import 'package:flutter/material.dart';
+import 'package:rational/rational.dart';
 import 'package:signals/signals_flutter.dart';
 import 'dart:math' as math;
 
+import '../../data/numbers/rational.dart';
 import '../widgets/activity_input.dart';
-import '../widgets/double_input.dart';
 import '../widgets/time_input.dart';
 import 'base_calc.dart';
 
 BaseCalc buildHalfLife() {
   final builder = BaseCalcBuilder('Half Life');
 
-  final initialActivity = Input<double>(
+  final initialActivity = Input<Rational>(
     'Initial Activity',
-    0.0,
+    Rational.zero,
     (val) {
       return ActivityInput(
         label: 'Initial Activity',
         value: val,
       );
     },
+    getValue: Rational.parse,
+    setValue: (val) => val.toString(),
   );
 
-  final finalActivity = Input<double>(
+  final finalActivity = Input<Rational>(
     'Final Activity',
-    0.0,
+    Rational.zero,
     (val) {
       return ActivityInput(
         label: 'Final Activity',
         value: val,
       );
     },
+    getValue: Rational.parse,
+    setValue: (val) => val.toString(),
   );
 
-  final halfLife = Input<double>(
+  final halfLife = Input<Rational>(
     'Half Life',
-    10.0,
+    Rational.parse('10'),
     (val) {
       return TimeInput(
         label: 'Half Life',
         value: val,
       );
     },
+    getValue: Rational.parse,
+    setValue: (val) => val.toString(),
   );
 
-  final time = Input<double>(
+  final time = Input<Rational>(
     'Time',
-    10.0,
+    Rational.parse('10'),
     (val) {
       return TimeInput(
         label: 'Time',
         value: val,
       );
     },
+    getValue: Rational.parse,
+    setValue: (val) => val.toString(),
   );
 
-  final solveForInitialActivity = Output<double>('Initial Activity', () {
-    return safeCalc(() {
+  final solveForInitialActivity = Output<Rational>('Initial Activity', () {
+    return safeRational(() {
       return finalActivity() *
-          math.pow(
-            math.e,
-            (math.ln2 / halfLife()) * time(),
-          );
-    }, 0);
+          math.e.toRational().pow(
+                ((math.ln2.toRational() / halfLife()) * time())
+                    .toBigInt()
+                    .toInt(),
+              );
+    });
   }, (val) {
     return ActivityInput(
       label: 'Initial Activity',
@@ -70,14 +80,16 @@ BaseCalc buildHalfLife() {
   })
     ..input = initialActivity;
 
-  final solveForFinalActivity = Output<double>('Final Activity', () {
-    return safeCalc(() {
+  final solveForFinalActivity = Output<Rational>('Final Activity', () {
+    return safeRational(() {
       return initialActivity() *
-          math.pow(
-            math.e,
-            ((math.ln2 / halfLife()) * time()) * -1,
-          );
-    }, 0);
+          math.e.toRational().pow(
+                (((math.ln2.toRational() / halfLife()) * time()) *
+                        Rational.fromInt(-1))
+                    .toBigInt()
+                    .toInt(),
+              );
+    });
   }, (val) {
     return ActivityInput(
       label: 'Final Activity',
@@ -86,30 +98,32 @@ BaseCalc buildHalfLife() {
   })
     ..input = finalActivity;
 
-  final solveForHalfLife = Output<double>('Half Life', () {
-    return safeCalc(() {
-      return (time() * math.ln2) /
-          math.log(
-            initialActivity() / finalActivity(),
-          );
-    }, 0);
+  final solveForHalfLife = Output<Rational>('Half Life', () {
+    return safeRational(() {
+      return (time() * math.ln2.toRational()) /
+          math
+              .log(
+                (initialActivity() / finalActivity()).toDouble(),
+              )
+              .toRational();
+    });
   }, (val) {
-    return DoubleInput(
+    return TimeInput(
       label: 'Half Life',
       value: val,
     );
   })
     ..input = halfLife;
 
-  final solveForTime = Output<double>('Time', () {
-    return safeCalc(() {
-      return (math.log(
-            finalActivity() / initialActivity(),
-          )) /
-          ((math.ln2 / halfLife()) * -1);
-    }, 0);
+  final solveForTime = Output<Rational>('Time', () {
+    return safeRational(() {
+      return (math
+              .log((finalActivity() / initialActivity()).toDouble())
+              .toRational()) /
+          ((math.ln2.toRational() / halfLife()) * Rational.fromInt(-1));
+    });
   }, (val) {
-    return DoubleInput(
+    return TimeInput(
       label: 'Time',
       value: val,
     );
@@ -117,10 +131,10 @@ BaseCalc buildHalfLife() {
     ..input = time;
 
   Chart activityOverTime({
-    required CoreValue<double> initialActivity,
-    required CoreValue<double> finalActivity,
-    required CoreValue<double> halfLife,
-    required CoreValue<double> time,
+    required CoreValue<Rational> initialActivity,
+    required CoreValue<Rational> finalActivity,
+    required CoreValue<Rational> halfLife,
+    required CoreValue<Rational> time,
   }) {
     return Chart('Activity Over Time', computed(() {
       final results = <({double x, double y})>[];
@@ -131,17 +145,19 @@ BaseCalc buildHalfLife() {
       final t = time();
 
       results.add((
-        y: iA,
+        y: iA.toDouble(),
         x: 0,
       ));
 
-      int increments = (t.isNaN || t.isInfinite) ? 0 : t.toInt();
+      int increments = (t.toDouble().isNaN || t.toDouble().isInfinite)
+          ? 0
+          : t.toDouble().toInt();
       for (var i = 0; i < increments; i++) {
         double slope(double x) {
-          return iA *
+          return iA.toDouble() *
               math.pow(
                 math.e,
-                ((math.ln2 / hL) * x) * -1,
+                ((math.ln2 / hL.toDouble()) * x) * -1,
               );
         }
 
@@ -152,7 +168,7 @@ BaseCalc buildHalfLife() {
       }
 
       results.add((
-        y: fA,
+        y: fA.toDouble(),
         x: t.toDouble(),
       ));
 

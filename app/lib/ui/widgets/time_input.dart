@@ -1,8 +1,11 @@
+import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:rational/rational.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:signals_hooks/signals_hooks.dart';
 
+import '../../data/numbers/rational.dart';
 import '../calculators/base_calc.dart';
 import 'double_input.dart';
 
@@ -25,7 +28,7 @@ class TimeInput extends DoubleInput {
     required super.label,
   });
 
-  static TimeInput fromCoreValue(CoreValue<double> value) {
+  static TimeInput fromCoreValue(CoreValue<Rational> value) {
     return TimeInput(
       value: value.source,
       label: value.label,
@@ -37,20 +40,24 @@ class TimeInput extends DoubleInput {
     final options = useSignal(TimeType.values);
     final selected = useSignal<TimeType>(TimeType.s);
 
+    String desc(Rational val) {
+      return val.toDecimal(scaleOnInfinitePrecision: 10).toString();
+    }
+
     final raw = useExistingSignal(value);
     final controller = useTextEditingController(
-      text: convertFromSeconds(
+      text: desc(convertFromSeconds(
         selected.value,
-        raw.value ?? 0,
-      ).toStringAsPrecision(3),
+        raw.value ?? Rational.zero,
+      )),
     );
 
     useSignalEffect(() {
       selected.value;
-      controller.text = untracked(() => convertFromSeconds(
+      controller.text = untracked(() => desc(convertFromSeconds(
             selected.value,
-            raw.value ?? 0,
-          ).toString());
+            raw.value ?? Rational.zero,
+          )));
     });
 
     final Widget selector = DropdownButton(
@@ -73,10 +80,10 @@ class TimeInput extends DoubleInput {
         title: Text(label),
         subtitle: SelectableText(raw.value == null
             ? 'N/A'
-            : convertToSeconds(
+            : desc(convertToSeconds(
                 selected.value,
                 raw.value!,
-              ).toStringAsPrecision(3)),
+              ))),
         trailing: selector,
       );
     }
@@ -86,26 +93,28 @@ class TimeInput extends DoubleInput {
       subtitle: TextFormField(
         controller: controller,
         validator: (value) {
-          if (value == null || value.isEmpty || num.tryParse(value) == null) {
+          if (value == null ||
+              value.isEmpty ||
+              Rational.tryParse(value) == null) {
             return 'Please enter a valid number';
           }
           return null;
         },
         onSaved: (value) {
           final target = this.value;
-          if (target is Signal<double?>) {
+          if (target is Signal<Rational?>) {
             target.value = convertToSeconds(
               selected.value,
-              num.tryParse(value!)?.toDouble() ?? 0,
+              Rational.tryParse(value!) ?? Rational.zero,
             );
           }
         },
         onChanged: (value) {
           final target = this.value;
-          if (target is Signal<double?>) {
+          if (target is Signal<Rational?>) {
             target.value = convertToSeconds(
               selected.value,
-              num.tryParse(value)?.toDouble() ?? 0,
+              Rational.tryParse(value) ?? Rational.zero,
             );
           }
         },
@@ -120,22 +129,30 @@ class TimeInput extends DoubleInput {
   }
 }
 
-double convertToSeconds(TimeType type, double val) {
+Rational convertToSeconds(TimeType type, Rational val) {
   return switch (type) {
     TimeType.s => val,
-    TimeType.min => val * 60,
-    TimeType.hr => val * 60 * 60,
-    TimeType.d => val * 60 * 60 * 24,
-    TimeType.y => val * 60 * 60 * 24 * 365.25,
+    TimeType.min => val * 60.toRational(),
+    TimeType.hr => val * 60.toRational() * 60.toRational(),
+    TimeType.d => val * 60.toRational() * 60.toRational() * 24.toRational(),
+    TimeType.y => val *
+        60.toRational() *
+        60.toRational() *
+        24.toRational() *
+        365.25.toRational(),
   };
 }
 
-double convertFromSeconds(TimeType type, double val) {
+Rational convertFromSeconds(TimeType type, Rational val) {
   return switch (type) {
     TimeType.s => val,
-    TimeType.min => val / 60,
-    TimeType.hr => val / 60 / 60,
-    TimeType.d => val / 60 / 60 / 24,
-    TimeType.y => val / 60 / 60 / 24 / 365.25,
+    TimeType.min => val / 60.toRational(),
+    TimeType.hr => val / 60.toRational() / 60.toRational(),
+    TimeType.d => val / 60.toRational() / 60.toRational() / 24.toRational(),
+    TimeType.y => val /
+        60.toRational() /
+        60.toRational() /
+        24.toRational() /
+        365.25.toRational(),
   };
 }
