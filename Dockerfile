@@ -4,10 +4,13 @@ WORKDIR /app
 
 COPY ./app/. .
 
-RUN dart pub global activate dhttpd
 RUN flutter pub get
 RUN flutter build web
+RUN dart compile exe bin/server.dart -o build/server
+
+ENV PORT=8080
+ENV HOST=0.0.0.0
 
 EXPOSE 8080
 
-CMD ["dart", "pub", "global", "run", "dhttpd", "--path", "build/web/", "--port", "8080", "--host", "0.0.0.0"]
+CMD ["./build/server"]
