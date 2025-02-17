@@ -34,9 +34,9 @@ RUN flutter pub get
 RUN flutter build web
 RUN dart compile exe bin/server.dart -o build/server
 
-ENV PORT=8080
 ENV HOST=0.0.0.0
+ENV PORT=8181
 
-EXPOSE 8080
+EXPOSE 8181
 
 CMD ["./build/server"]
