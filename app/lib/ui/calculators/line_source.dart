@@ -89,6 +89,17 @@ class LineSource extends BaseCalc {
     return result;
   });
 
+  // late final length$ = computed<double?>(() {
+  //   if (variant.value != 'length') return length();
+
+  //   if (exposureRate2() == null || exposureRate1() == null || distance1() == null || distance2() == null) {
+  //     return null;
+  //   }
+
+  //   final result = "add formula here";
+  //   return result;
+  // });
+
   late final chartData$ = computed(() {
     final results = <({double exposure, double distance})>[];
 
@@ -156,6 +167,14 @@ class LineSource extends BaseCalc {
     );
   });
 
+  late Computed<Widget> lengthInput = computed(() {
+      return DoubleInput(
+        key: ValueKey((variant.value, 'length')),
+        label: 'Length of the Source',
+        value: variant.value != 'length' ? length : length$,
+      );
+    });
+
   late Computed<Widget> exposureOverDistance = computed(() => Padding(
         padding: const EdgeInsets.all(8),
         child: ClipRect(
@@ -202,6 +221,12 @@ class LineSource extends BaseCalc {
         exposureRate2Input(),
         distance1Input(),
       ],
+       'length': [
+        exposureRate1Input(),
+        exposureRate2Input(),
+        distance1Input(),
+        distance2Input(),
+      ],
     };
   });
 
@@ -222,6 +247,10 @@ class LineSource extends BaseCalc {
       ],
       'distance2': [
         distance2Input(),
+        exposureOverDistance(),
+      ],
+      'length': [
+        lengthInput(),
         exposureOverDistance(),
       ],
     };
