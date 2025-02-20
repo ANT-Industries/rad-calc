@@ -36,7 +36,7 @@ BaseCalc buildPointSource() {
     'Distance 1',
     5.0,
     (val) {
-      return DoubleInput(
+      return DistanceInput(
         label: 'Distance 1',
         value: val,
       );
@@ -47,7 +47,7 @@ BaseCalc buildPointSource() {
     'Distance 2',
     100.0,
     (val) {
-      return DoubleInput(
+      return DistanceInput(
         label: 'Distance 2',
         value: val,
       );
