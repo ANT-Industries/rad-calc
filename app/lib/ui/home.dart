@@ -5,6 +5,7 @@ import 'package:signals_hooks/signals_hooks.dart';
 
 import 'calculators/base_calc.dart';
 import 'calculators/half_life.dart';
+import 'calculators/point_source.dart';
 
 class Home extends HookWidget {
   const Home({
@@ -20,6 +21,7 @@ class Home extends HookWidget {
   Widget build(BuildContext context) {
     final calculators = useSignal(<BaseCalc>[
       buildHalfLife(),
+      buildPointSource(),
     ]);
     final searchController = useTextEditingController();
     final query = useExistingSignal(searchController.toSignal());
