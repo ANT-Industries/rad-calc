@@ -1,5 +1,3 @@
-import 'package:app/ui/calculators/line_source.dart';
-import 'package:app/ui/calculators/point_source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:signals/signals_flutter.dart';
@@ -9,20 +7,58 @@ import 'calculators/base_calc.dart';
 import 'calculators/half_life.dart';
 
 class Home extends HookWidget {
-  const Home({super.key, required this.brightness});
+  const Home({
+    super.key,
+    required this.brightness,
+    required this.theme,
+  });
 
   final Signal<Brightness> brightness;
+  final Signal<Color> theme;
 
   @override
   Widget build(BuildContext context) {
     final calculators = useSignal(<BaseCalc>[
       buildHalfLife(),
-      PointSource(),
-      LineSource(),
     ]);
+    final searchController = useTextEditingController();
+    final query = useExistingSignal(searchController.toSignal());
+    final filtered = useComputed(() {
+      final q = query.value.text.toLowerCase();
+      return calculators.value.where((e) {
+        return e.name.toLowerCase().contains(q);
+      }).toList();
+    });
+    final selectedCalc = useSignal<BaseCalc?>(null);
+    final hideList = useSignal(false);
+    final size = MediaQuery.of(context).size;
+    final canShowDetails = size.width > 600;
+    final showOnlyList = !canShowDetails || hideList.value;
+    final allColors = useComputed<List<Color>>(() {
+      return [
+        Colors.red,
+        Colors.green,
+        Colors.blue,
+        Colors.purple,
+        Colors.orange,
+        Colors.teal,
+        Colors.pink,
+        Colors.indigo,
+        Colors.amber,
+        Colors.cyan,
+      ];
+    });
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rad Calc'),
+        leading: canShowDetails
+            ? IconButton(
+                icon: Icon(hideList.value ? Icons.view_sidebar : Icons.close),
+                onPressed: () {
+                  hideList.value = !hideList.value;
+                },
+              )
+            : null,
         actions: [
           IconButton(
             icon: const Icon(Icons.brightness_4),
@@ -32,28 +68,81 @@ class Home extends HookWidget {
                   : Brightness.light;
             },
           ),
+          IconButton(
+            icon: const Icon(Icons.palette),
+            color: theme.value,
+            onPressed: () {
+              final index = allColors.value.indexOf(theme.value);
+              final next =
+                  allColors.value[(index + 1) % allColors.value.length];
+              theme.value = next;
+            },
+          ),
         ],
       ),
-      body: calculators.value.isEmpty
-          ? const Center(child: Text('No calculators found'))
-          : ListView.builder(
-              itemCount: calculators.value.length,
-              itemBuilder: (context, index) {
-                final calc = calculators.value[index];
-                return ListTile(
-                  title: Text(calc.name),
-                  trailing: const Icon(Icons.chevron_right),
-                  onTap: () {
-                    final nav = Navigator.of(context);
-                    nav.push(
-                      MaterialPageRoute(
-                        builder: (context) => calc,
-                      ),
+      body: () {
+        final Widget list = Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8),
+              child: TextField(
+                controller: searchController,
+                decoration: const InputDecoration(
+                  labelText: 'Search',
+                  prefixIcon: Icon(Icons.search),
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ),
+            Expanded(
+              child: () {
+                if (filtered.value.isEmpty) {
+                  return const Center(child: Text('No calculators found'));
+                }
+                return ListView.builder(
+                  itemCount: filtered.value.length,
+                  itemBuilder: (context, index) {
+                    final calc = filtered.value[index];
+                    return ListTile(
+                      title: Text(calc.name),
+                      trailing: const Icon(Icons.chevron_right),
+                      onTap: () {
+                        final nav = Navigator.of(context);
+                        if (showOnlyList) {
+                          nav.push(
+                            MaterialPageRoute(
+                              builder: (context) => calc,
+                            ),
+                          );
+                        } else {
+                          selectedCalc.value = calc;
+                        }
+                      },
                     );
                   },
                 );
-              },
+              }(),
             ),
+          ],
+        );
+        if (canShowDetails && !showOnlyList) {
+          return Row(
+            children: [
+              SizedBox(
+                width: 280,
+                child: list,
+              ),
+              const VerticalDivider(width: 1),
+              Expanded(
+                flex: 2,
+                child: selectedCalc.value ??
+                    const Center(child: Text('Select a calculator')),
+              ),
+            ],
+          );
+        }
+        return list;
+      }(),
     );
   }
 }

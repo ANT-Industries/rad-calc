@@ -1,37 +1,59 @@
+import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
 import 'dart:math' as math;
 
 import '../widgets/activity_input.dart';
 import '../widgets/double_input.dart';
+import '../widgets/time_input.dart';
 import 'base_calc.dart';
 
 BaseCalc buildHalfLife() {
   final builder = BaseCalcBuilder('Half Life');
-  final initialActivity =
-      Input<double>('Initial Activity', 0.0, (context, val) {
-    return ActivityInput(
-      label: 'Initial Activity',
-      value: val,
-    );
-  });
-  final finalActivity = Input<double>('Final Activity', 0.0, (context, val) {
-    return ActivityInput(
-      label: 'Final Activity',
-      value: val,
-    );
-  });
-  final halfLife = Input<double>('Half Life', 10.0, (context, val) {
-    return DoubleInput(
-      label: 'Half Life',
-      value: val,
-    );
-  });
-  final time = Input<double>('Time', 10.0, (context, val) {
-    return DoubleInput(
-      label: 'Time',
-      value: val,
-    );
-  });
+
+  final initialActivity = Input<double>(
+    'Initial Activity',
+    0.0,
+    (val) {
+      return ActivityInput(
+        label: 'Initial Activity',
+        value: val,
+      );
+    },
+  );
+
+  final finalActivity = Input<double>(
+    'Final Activity',
+    0.0,
+    (val) {
+      return ActivityInput(
+        label: 'Final Activity',
+        value: val,
+      );
+    },
+  );
+
+  final halfLife = Input<double>(
+    'Half Life',
+    10.0,
+    (val) {
+      return TimeInput(
+        label: 'Half Life',
+        value: val,
+      );
+    },
+  );
+
+  final time = Input<double>(
+    'Time',
+    10.0,
+    (val) {
+      return TimeInput(
+        label: 'Time',
+        value: val,
+      );
+    },
+  );
+
   final solveForInitialActivity = Output<double>('Initial Activity', () {
     return safeCalc(() {
       return finalActivity() *
@@ -40,13 +62,14 @@ BaseCalc buildHalfLife() {
             (math.ln2 / halfLife()) * time(),
           );
     }, 0);
-  }, (context, val) {
+  }, (val) {
     return ActivityInput(
       label: 'Initial Activity',
       value: val,
     );
   })
     ..input = initialActivity;
+
   final solveForFinalActivity = Output<double>('Final Activity', () {
     return safeCalc(() {
       return initialActivity() *
@@ -55,13 +78,14 @@ BaseCalc buildHalfLife() {
             ((math.ln2 / halfLife()) * time()) * -1,
           );
     }, 0);
-  }, (context, val) {
+  }, (val) {
     return ActivityInput(
       label: 'Final Activity',
       value: val,
     );
   })
     ..input = finalActivity;
+
   final solveForHalfLife = Output<double>('Half Life', () {
     return safeCalc(() {
       return (time() * math.ln2) /
@@ -69,13 +93,14 @@ BaseCalc buildHalfLife() {
             initialActivity() / finalActivity(),
           );
     }, 0);
-  }, (context, val) {
+  }, (val) {
     return DoubleInput(
       label: 'Half Life',
       value: val,
     );
   })
     ..input = halfLife;
+
   final solveForTime = Output<double>('Time', () {
     return safeCalc(() {
       return (math.log(
@@ -83,7 +108,7 @@ BaseCalc buildHalfLife() {
           )) /
           ((math.ln2 / halfLife()) * -1);
     }, 0);
-  }, (context, val) {
+  }, (val) {
     return DoubleInput(
       label: 'Time',
       value: val,
@@ -135,7 +160,7 @@ BaseCalc buildHalfLife() {
     }));
   }
 
-  builder.addCalculation('Initial Activity')
+  builder.addCalculation('Initial Activity', Icons.calculate)
     ..inputs.add(finalActivity)
     ..inputs.add(halfLife)
     ..inputs.add(time)
@@ -146,7 +171,8 @@ BaseCalc buildHalfLife() {
       halfLife: halfLife,
       time: time,
     ));
-  builder.addCalculation('Final Activity')
+
+  builder.addCalculation('Final Activity', Icons.calculate)
     ..inputs.add(initialActivity)
     ..inputs.add(halfLife)
     ..inputs.add(time)
@@ -157,7 +183,8 @@ BaseCalc buildHalfLife() {
       halfLife: halfLife,
       time: time,
     ));
-  builder.addCalculation('Half Life')
+
+  builder.addCalculation('Half Life', Icons.timer)
     ..inputs.add(initialActivity)
     ..inputs.add(finalActivity)
     ..inputs.add(time)
@@ -168,7 +195,8 @@ BaseCalc buildHalfLife() {
       halfLife: solveForHalfLife,
       time: time,
     ));
-  builder.addCalculation('Time')
+
+  builder.addCalculation('Time', Icons.timer)
     ..inputs.add(initialActivity)
     ..inputs.add(finalActivity)
     ..inputs.add(halfLife)
@@ -179,6 +207,8 @@ BaseCalc buildHalfLife() {
       halfLife: halfLife,
       time: solveForTime,
     ));
+
   builder.setDefaultCalculation('Half Life');
+
   return builder.build();
 }
