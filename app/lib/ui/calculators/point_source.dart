@@ -4,6 +4,7 @@ import 'dart:math' as math;
 
 
 import '../widgets/double_input.dart';
+import '../widgets/distance_input.dart';
 import 'base_calc.dart';
 
 BaseCalc buildPointSource() {
@@ -85,7 +86,7 @@ BaseCalc buildPointSource() {
       math.pow(distance2(),2));
     }, 0);
   }, (val) {
-    return DoubleInput(
+    return DistanceInput(
       label: 'Distance 1',
       value: val,
     );
@@ -98,7 +99,7 @@ BaseCalc buildPointSource() {
       math.pow(distance1(),2));
     }, 0);
   }, (val) {
-    return DoubleInput(
+    return DistanceInput(
       label: 'Distance 2',
       value: val,
     );
