@@ -14,7 +14,7 @@ BaseCalc buildLineSource() {
     'Length',
     10.0,
     (val) {
-      return DoubleInput(
+      return DistanceInput(
         label: 'Length of Source',
         value: val,
       );
@@ -67,10 +67,10 @@ BaseCalc buildLineSource() {
 
   final solveForexposureRate1 = Output<double>('Exposure Rate 1', () {
     return safeCalc(() {
-    if ((length() / 2) <= distance1()) {
+    if (distance1()<= (length() / 2)) {
       return exposureRate2() * (distance2() / distance1());
     } else {
-      double exposureRateL2 = exposureRate2() * math.pow((distance2() / (length() / 2)), 2);
+      double exposureRateL2 = exposureRate2() * (distance2() / (length() / 2));
       return exposureRateL2  * math.pow(((length() / 2) / distance1()), 2);
     }
   }, 0);
@@ -84,10 +84,10 @@ BaseCalc buildLineSource() {
 
   final solveForexposureRate2 = Output<double>('Exposure Rate 2', () {
     return safeCalc(() {
-    if ((length() / 2) <= distance1()) {
+    if (distance2()<= (length() / 2)) {
       return exposureRate1() * (distance1() / distance2());
     } else {
-      double exposureRateL2 = exposureRate1() * math.pow((distance1() / (length() / 2)), 2);
+      double exposureRateL2 = exposureRate1() * (distance1() / (length() / 2));
       return exposureRateL2  * math.pow(((length() / 2) / distance2()), 2);
     }
   }, 0);
@@ -101,13 +101,12 @@ BaseCalc buildLineSource() {
 
   final solveFordistance1 = Output<double>('Distance 1', () {
   return safeCalc(() {
-    if ((length() / 2) <= distance1()) {
-      return math.sqrt((exposureRate2() / exposureRate1())) * distance2();
+    if (distance2()<= (length() / 2)) {
+      return (exposureRate2() / exposureRate1()) * distance2();
     } else {
-      double exposureRateL2 = exposureRate2() * math.pow(((length() / 2) / distance1()), 2);
-      
-      return math.sqrt((exposureRateL2/ exposureRate1()) * 
-      math.pow((length() / 2),2)); // Adjust combination logic if needed
+      double exposureRateL2 = exposureRate2() * math.pow((distance2()/(length()/2)),2);
+      return (exposureRateL2/ exposureRate1()) * 
+      (length() / 2); // Adjust combination logic if needed
     }
       }, 0);
   }, (val) {
@@ -119,12 +118,12 @@ BaseCalc buildLineSource() {
 
    final solveFordistance2 = Output<double>('Distance 2', () {
   return safeCalc(() {
-    if ((length() / 2) <= distance2()) {
-      return math.sqrt((exposureRate1() / exposureRate2())) * distance1();
+    if (distance1()<= (length() / 2)) {
+      return (exposureRate1() / exposureRate2()) * distance1();
     } else {
-      double exposureRateL2 = exposureRate1() * math.pow(((length() / 2) / distance2()), 2);
-      return math.sqrt((exposureRateL2/ exposureRate2()) * 
-      math.pow((length() / 2),2)); // Adjust combination logic if needed
+      double exposureRateL2 = exposureRate1() * math.pow((distance1()/(length()/2)),2);
+      return (exposureRateL2/ exposureRate2()) * 
+      (length() / 2); // Adjust combination logic if needed
     }
       }, 0);
   }, (val) {
@@ -166,6 +165,7 @@ BaseCalc buildLineSource() {
   }
 
   builder.addCalculation('Exposure Rate 1', Icons.calculate)
+    ..inputs.add(length)
     ..inputs.add(exposureRate2)
     ..inputs.add(distance1)
     ..inputs.add(distance2)
@@ -178,6 +178,7 @@ BaseCalc buildLineSource() {
     ));
 
   builder.addCalculation('Exposure Rate 2', Icons.calculate)
+    ..inputs.add(length)
     ..inputs.add(exposureRate1)
     ..inputs.add(distance1)
     ..inputs.add(distance2)
@@ -190,6 +191,7 @@ BaseCalc buildLineSource() {
     ));
 
   builder.addCalculation('Distance 1', Icons.calculate)
+    ..inputs.add(length)
     ..inputs.add(exposureRate1)
     ..inputs.add(exposureRate2)
     ..inputs.add(distance2)
@@ -202,6 +204,7 @@ BaseCalc buildLineSource() {
     ));
 
   builder.addCalculation('Distance 2', Icons.calculate)
+    ..inputs.add(length)
     ..inputs.add(exposureRate1)
     ..inputs.add(exposureRate2)
     ..inputs.add(distance1)
