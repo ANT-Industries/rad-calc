@@ -22,11 +22,11 @@ BaseCalc buildSixCen() {
   );
 
   final E = Input<double>(
-    'Photon Energy (MeV)',
+    'Photon Energy',
     0.0,
         (val) {
       return EnergyInput(
-        label: 'Photon Energy (MeV)',
+        label: 'Photon Energy',
         value: val,
       );
     },

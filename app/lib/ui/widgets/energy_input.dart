@@ -36,7 +36,7 @@ class EnergyInput extends DoubleInput {
 
     final raw = useExistingSignal(value);
     final controller = useTextEditingController(
-      text: convertFromKeV(
+      text: convertFromMeV(
         selected.value,
         raw.value ?? 0,
       ).toStringAsPrecision(3),
@@ -44,7 +44,7 @@ class EnergyInput extends DoubleInput {
 
     useSignalEffect(() {
       selected.value;
-      controller.text = untracked(() => convertFromKeV(
+      controller.text = untracked(() => convertFromMeV(
             selected.value,
             raw.value ?? 0,
           ).toString());
@@ -70,7 +70,7 @@ class EnergyInput extends DoubleInput {
         title: Text(label),
         subtitle: SelectableText(raw.value == null
             ? 'N/A'
-            : convertToKeV(
+            : convertToMeV(
                 selected.value,
                 raw.value!,
               ).toStringAsPrecision(3)),
@@ -91,7 +91,7 @@ class EnergyInput extends DoubleInput {
         onSaved: (value) {
           final target = this.value;
           if (target is Signal<double?>) {
-            target.value = convertToKeV(
+            target.value = convertToMeV(
               selected.value,
               num.tryParse(value!)?.toDouble() ?? 0,
             );
@@ -100,7 +100,7 @@ class EnergyInput extends DoubleInput {
         onChanged: (value) {
           final target = this.value;
           if (target is Signal<double?>) {
-            target.value = convertToKeV(
+            target.value = convertToMeV(
               selected.value,
               num.tryParse(value)?.toDouble() ?? 0,
             );
@@ -117,16 +117,16 @@ class EnergyInput extends DoubleInput {
   }
 }
 
-double convertToKeV(EnergyType type, double val) {
+double convertToMeV(EnergyType type, double val) {
   return switch (type) {
-    EnergyType.kev => val,
-    EnergyType.mev => val * 1000,
+    EnergyType.mev => val,
+    EnergyType.kev => val / 1000,
   };
 }
 
-double convertFromKeV(EnergyType type, double val) {
+double convertFromMeV(EnergyType type, double val) {
   return switch (type) {
-    EnergyType.mev => val /1000,
-    EnergyType.kev => val,
+    EnergyType.kev => val * 1000,
+    EnergyType.mev => val,
   };
 }
