@@ -1,7 +1,9 @@
+import 'package:app/ui/widgets/energy_input.dart';
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
 import 'dart:math' as math;
 
+import '../widgets/energy_input.dart';
 import '../widgets/double_input.dart';
 import 'base_calc.dart';
 
@@ -23,7 +25,7 @@ BaseCalc buildSixCen() {
     'Photon Energy (MeV)',
     0.0,
         (val) {
-      return DoubleInput(
+      return EnergyInput(
         label: 'Photon Energy (MeV)',
         value: val,
       );
@@ -42,11 +44,11 @@ BaseCalc buildSixCen() {
   );
 
   final exposure = Input<double>(
-    'Exposure',
+    'Exposure (R/hr)',
     0.0,
         (val) {
       return DoubleInput(
-        label: 'Exposure',
+        label: 'Exposure (R/hr)',
         value: val,
       );
     },
@@ -88,13 +90,13 @@ BaseCalc buildSixCen() {
   })
     ..input = N;
 
-  final solveForExposure = Output<double>('Exposure', () {
+  final solveForExposure = Output<double>('Exposure (R/hr)', () {
     return safeCalc(() {
       return (6 * C() * E() * N());
     }, 0);
   }, (val) {
     return DoubleInput(
-      label: 'Exposure',
+      label: 'Exposure (R/hr)',
       value: val,
     );
   })
@@ -102,7 +104,7 @@ BaseCalc buildSixCen() {
 
 
 
-  builder.addCalculation('Exposure', Icons.calculate)
+  builder.addCalculation('Exposure (R/hr)', Icons.calculate)
     ..inputs.add(C)
     ..inputs.add(E)
     ..inputs.add(N)
@@ -126,7 +128,7 @@ BaseCalc buildSixCen() {
     ..inputs.add(E)
     ..outputs.add(solveForPhotonAbundance);
 
-  builder.setDefaultCalculation('Exposure');
+  builder.setDefaultCalculation('Exposure (R/hr)');
 
   return builder.build();
 }
