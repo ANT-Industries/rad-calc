@@ -131,40 +131,40 @@ double dpsToBq(double val) => val;
 
 double bqToDps(double val) => val;
 
-double bqToCi(double val) => val * 3.7e10;
+double bqToCi(double val) => val / 3.7e10;
 
-double ciToBq(double val) => val / 3.7e10;
+double ciToBq(double val) => val * 3.7e10;
 
-double convertToCuries(ActivityType type, double val) {
+double convertFromCuries(ActivityType type, double val) {
   return switch (type) {
-    ActivityType.dps => bqToDps(bqToCi(val)),
-    ActivityType.dpm => val / 2.22e12,
+    ActivityType.dps => bqToDps(ciToBq(val)),
+    ActivityType.dpm => val * 2.22e12,
     ActivityType.ci => val,
     ActivityType.pCi => val * 1e12,
     ActivityType.nCi => val * 1e9,
     ActivityType.uCi => val * 1e6,
     ActivityType.mCi => val * 1e3,
-    ActivityType.bq => bqToCi(val),
-    ActivityType.kBq => bqToCi(val) / 1e3,
-    ActivityType.mBq => bqToCi(val) / 1e6,
-    ActivityType.gBq => bqToCi(val) / 1e9,
-    ActivityType.tBq => bqToCi(val) / 1e12,
+    ActivityType.bq => ciToBq(val),
+    ActivityType.kBq => ciToBq(val) / 1e3,
+    ActivityType.mBq => ciToBq(val) / 1e6,
+    ActivityType.gBq => ciToBq(val) / 1e9,
+    ActivityType.tBq => ciToBq(val) / 1e12,
   };
 }
 
-double convertFromCuries(ActivityType type, double val) {
+double convertToCuries(ActivityType type, double val) {
   return switch (type) {
-    ActivityType.dps => ciToBq(dpsToBq(val)),
-    ActivityType.dpm => val * 2.22e12,
+    ActivityType.dps => bqToCi(dpsToBq(val)),
+    ActivityType.dpm => val / 2.22e12,
     ActivityType.ci => val,
     ActivityType.pCi => val / 1e12,
     ActivityType.nCi => val / 1e9,
     ActivityType.uCi => val / 1e6,
     ActivityType.mCi => val / 1e3,
-    ActivityType.bq => ciToBq(val),
-    ActivityType.kBq => ciToBq(val) * 1e3,
-    ActivityType.mBq => ciToBq(val) * 1e6,
-    ActivityType.gBq => ciToBq(val) * 1e9,
-    ActivityType.tBq => ciToBq(val) * 1e12,
+    ActivityType.bq => bqToCi(val),
+    ActivityType.kBq => bqToCi(val) * 1e3,
+    ActivityType.mBq => bqToCi(val) * 1e6,
+    ActivityType.gBq => bqToCi(val) * 1e9,
+    ActivityType.tBq => bqToCi(val) * 1e12,
   };
 }

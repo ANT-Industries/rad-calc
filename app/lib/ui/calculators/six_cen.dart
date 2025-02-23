@@ -5,17 +5,18 @@ import 'dart:math' as math;
 
 import '../widgets/energy_input.dart';
 import '../widgets/double_input.dart';
+import '../widgets/activity_input.dart';
 import 'base_calc.dart';
 
 BaseCalc buildSixCen() {
   final builder = BaseCalcBuilder('6CEN');
 
   final C = Input<double>(
-    'Curies',
+    'Activty',
     0.0,
         (val) {
-      return DoubleInput(
-        label: 'Curies',
+      return ActivityInput(
+        label: 'Activity',
         value: val,
       );
     },
@@ -54,13 +55,13 @@ BaseCalc buildSixCen() {
     },
   );
 
-  final solveForCuries = Output<double>('Curies', () {
+  final solveForActivity = Output<double>('Activity', () {
     return safeCalc(() {
       return exposure() / (6 * N() * E());
     }, 0);
   }, (val) {
     return DoubleInput(
-      label: 'Curies',
+      label: 'Activity',
       value: val,
     );
   })
@@ -110,11 +111,11 @@ BaseCalc buildSixCen() {
     ..inputs.add(N)
     ..outputs.add(solveForExposure);
 
-  builder.addCalculation('Curies', Icons.calculate)
+  builder.addCalculation('Activity', Icons.calculate)
     ..inputs.add(exposure)
     ..inputs.add(E)
     ..inputs.add(N)
-    ..outputs.add(solveForCuries);
+    ..outputs.add(solveForActivity);
 
   builder.addCalculation('Photon Energy (MeV)', Icons.calculate)
     ..inputs.add(exposure)
