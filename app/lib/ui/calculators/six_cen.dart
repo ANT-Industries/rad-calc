@@ -20,11 +20,11 @@ BaseCalc buildSixCen() {
   );
 
   final E = Input<double>(
-    'MeV',
+    'Photon Energy (MeV)',
     0.0,
         (val) {
       return DoubleInput(
-        label: 'MeV',
+        label: 'Photon Energy (MeV)',
         value: val,
       );
     },
@@ -88,7 +88,7 @@ BaseCalc buildSixCen() {
   })
     ..input = N;
 
-  final solveForExposure = Output<double>('Exposure Rate', () {
+  final solveForExposure = Output<double>('Exposure', () {
     return safeCalc(() {
       return (6 * C() * E() * N());
     }, 0);
@@ -114,7 +114,7 @@ BaseCalc buildSixCen() {
     ..inputs.add(N)
     ..outputs.add(solveForCuries);
 
-  builder.addCalculation('Photon Energy', Icons.calculate)
+  builder.addCalculation('Photon Energy (MeV)', Icons.calculate)
     ..inputs.add(exposure)
     ..inputs.add(C)
     ..inputs.add(N)
