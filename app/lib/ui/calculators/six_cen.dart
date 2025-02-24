@@ -1,11 +1,11 @@
 import 'package:app/ui/widgets/energy_input.dart';
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
-import 'dart:math' as math;
 
 import '../widgets/energy_input.dart';
 import '../widgets/double_input.dart';
 import '../widgets/activity_input.dart';
+import '../widgets/exposure_rate_input.dart';
 import 'base_calc.dart';
 
 BaseCalc buildSixCen() {
@@ -48,7 +48,7 @@ BaseCalc buildSixCen() {
     'Exposure (R/hr)',
     0.0,
         (val) {
-      return DoubleInput(
+      return ExposureRateInput(
         label: 'Exposure (R/hr)',
         value: val,
       );
@@ -60,7 +60,7 @@ BaseCalc buildSixCen() {
       return exposure() / (6 * N() * E());
     }, 0);
   }, (val) {
-    return DoubleInput(
+    return ActivityInput(
       label: 'Activity',
       value: val,
     );
@@ -72,7 +72,7 @@ BaseCalc buildSixCen() {
       return exposure() / (6 * C() * N());
     }, 0);
   }, (val) {
-    return DoubleInput(
+    return EnergyInput(
       label: 'Photon Energy (MeV)',
       value: val,
     );
@@ -96,7 +96,7 @@ BaseCalc buildSixCen() {
       return (6 * C() * E() * N());
     }, 0);
   }, (val) {
-    return DoubleInput(
+    return ExposureRateInput(
       label: 'Exposure (R/hr)',
       value: val,
     );

@@ -8,6 +8,8 @@ import 'calculators/base_calc.dart';
 import 'calculators/half_life.dart';
 import 'calculators/point_source.dart';
 import 'calculators/line_source.dart';
+import 'calculators/six_cen.dart';
+import 'calculators/stay_time.dart';
 
 class Home extends HookWidget {
   const Home({
@@ -26,6 +28,7 @@ class Home extends HookWidget {
       buildPointSource(),
       buildLineSource(),
       buildSixCen(),
+      buildStayTime(),
     ]);
     final searchController = useTextEditingController();
     final query = useExistingSignal(searchController.toSignal());

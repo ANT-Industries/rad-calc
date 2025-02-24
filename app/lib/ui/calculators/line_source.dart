@@ -1,3 +1,4 @@
+import 'package:app/ui/widgets/exposure_rate_input.dart';
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
 import 'dart:math' as math;
@@ -5,6 +6,7 @@ import 'dart:math' as math;
 
 import '../widgets/double_input.dart';
 import '../widgets/distance_input.dart';
+import '../widgets/exposure_rate_input.dart';
 import 'base_calc.dart';
 
 BaseCalc buildLineSource() {
@@ -25,7 +27,7 @@ BaseCalc buildLineSource() {
     'Exposure Rate 1',
     1,
     (val) {
-      return DoubleInput(
+      return ExposureRateInput(
         label: 'Exposure Rate 1',
         value: val,
       );
@@ -36,7 +38,7 @@ BaseCalc buildLineSource() {
     'Exposure Rate 2',
     10,
     (val) {
-      return DoubleInput(
+      return ExposureRateInput(
         label: 'Exposure Rate 2',
         value: val,
       );
@@ -75,7 +77,7 @@ BaseCalc buildLineSource() {
     }
   }, 0);
   }, (val) {
-    return DoubleInput(
+    return ExposureRateInput(
       label: 'Exposure Rate 1',
       value: val,
     );
@@ -92,7 +94,7 @@ BaseCalc buildLineSource() {
     }
   }, 0);
   }, (val) {
-      return DoubleInput(
+      return ExposureRateInput(
         label: 'Exposure Rate 2',
         value: val,
       );

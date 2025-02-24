@@ -94,7 +94,7 @@ BaseCalc buildHalfLife() {
           );
     }, 0);
   }, (val) {
-    return DoubleInput(
+    return TimeInput(
       label: 'Half Life',
       value: val,
     );
@@ -109,7 +109,7 @@ BaseCalc buildHalfLife() {
           ((math.ln2 / halfLife()) * -1);
     }, 0);
   }, (val) {
-    return DoubleInput(
+    return TimeInput(
       label: 'Time',
       value: val,
     );
@@ -208,7 +208,7 @@ BaseCalc buildHalfLife() {
       time: solveForTime,
     ));
 
-  builder.setDefaultCalculation('Half Life');
+  builder.setDefaultCalculation('Final Activity');
 
   return builder.build();
 }
