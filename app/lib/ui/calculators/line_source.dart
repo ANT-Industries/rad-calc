@@ -103,12 +103,26 @@ BaseCalc buildLineSource() {
 
   final solveFordistance1 = Output<double>('Distance 1', () {
   return safeCalc(() {
-    if (distance2()<= (length() / 2)) {
-      return (exposureRate2() / exposureRate1()) * distance2();
-    } else {
+    if (exposureRate1() > exposureRate2()) {
+      if (distance2() <= (length() / 2)) {   
+        return (exposureRate2() / exposureRate1()) * distance2();
+      }
+      else{
       double exposureRateL2 = exposureRate2() * math.pow((distance2()/(length()/2)),2);
-      return (exposureRateL2/ exposureRate1()) * 
-      (length() / 2); // Adjust combination logic if needed
+      return (exposureRateL2/ exposureRate1()) * (length() / 2);
+      }
+    } if (exposureRate1() < exposureRate2()) {                                                                                                                                                                                                                      
+      if (distance1() <= (length() / 2)) {
+        return (exposureRate2() / exposureRate1()) * distance2();
+      }
+      else{
+      double exposureRateL2 = exposureRate2() * (distance2() / (length() / 2));
+      return math.sqrt((exposureRateL2/ exposureRate1()) * 
+      math.pow(distance2(),2));
+      }
+    }
+    else{
+      return distance2();
     }
       }, 0);
   }, (val) {
@@ -120,12 +134,26 @@ BaseCalc buildLineSource() {
 
    final solveFordistance2 = Output<double>('Distance 2', () {
   return safeCalc(() {
-    if (distance1()<= (length() / 2)) {
-      return (exposureRate1() / exposureRate2()) * distance1();
-    } else {
+    if (exposureRate2() > exposureRate1()) {
+      if (distance1() <= (length() / 2)) {   
+        return (exposureRate1() / exposureRate2()) * distance1();
+      }
+      else{
       double exposureRateL2 = exposureRate1() * math.pow((distance1()/(length()/2)),2);
-      return (exposureRateL2/ exposureRate2()) * 
-      (length() / 2); // Adjust combination logic if needed
+      return (exposureRateL2/ exposureRate2()) * (length() / 2);
+      }
+    } if (exposureRate2() < exposureRate1()) {                                                                                                                                                                                                                      
+      if (distance2() <= (length() / 2)) {
+        return (exposureRate1() / exposureRate2()) * distance1();
+      }
+      else{
+      double exposureRateL2 = exposureRate1() * (distance1() / (length() / 2));
+      return math.sqrt((exposureRateL2/ exposureRate2()) * 
+      math.pow(distance1(),2));
+      }
+    }
+    else{
+      return distance1();
     }
       }, 0);
   }, (val) {
