@@ -1,21 +1,22 @@
 import 'package:app/ui/widgets/energy_input.dart';
 import 'package:flutter/material.dart';
 import 'package:signals/signals_flutter.dart';
-import 'dart:math' as math;
 
 import '../widgets/energy_input.dart';
 import '../widgets/double_input.dart';
+import '../widgets/activity_input.dart';
+import '../widgets/exposure_rate_input.dart';
 import 'base_calc.dart';
 
 BaseCalc buildSixCen() {
   final builder = BaseCalcBuilder('6CEN');
 
   final C = Input<double>(
-    'Curies',
+    'Activty',
     0.0,
         (val) {
-      return DoubleInput(
-        label: 'Curies',
+      return ActivityInput(
+        label: 'Activity',
         value: val,
       );
     },
@@ -47,20 +48,20 @@ BaseCalc buildSixCen() {
     'Exposure (R/hr)',
     0.0,
         (val) {
-      return DoubleInput(
+      return ExposureRateInput(
         label: 'Exposure (R/hr)',
         value: val,
       );
     },
   );
 
-  final solveForCuries = Output<double>('Curies', () {
+  final solveForActivity = Output<double>('Activity', () {
     return safeCalc(() {
       return exposure() / (6 * N() * E());
     }, 0);
   }, (val) {
-    return DoubleInput(
-      label: 'Curies',
+    return ActivityInput(
+      label: 'Activity',
       value: val,
     );
   })
@@ -71,7 +72,7 @@ BaseCalc buildSixCen() {
       return exposure() / (6 * C() * N());
     }, 0);
   }, (val) {
-    return DoubleInput(
+    return EnergyInput(
       label: 'Photon Energy (MeV)',
       value: val,
     );
@@ -95,7 +96,7 @@ BaseCalc buildSixCen() {
       return (6 * C() * E() * N());
     }, 0);
   }, (val) {
-    return DoubleInput(
+    return ExposureRateInput(
       label: 'Exposure (R/hr)',
       value: val,
     );
@@ -110,11 +111,11 @@ BaseCalc buildSixCen() {
     ..inputs.add(N)
     ..outputs.add(solveForExposure);
 
-  builder.addCalculation('Curies', Icons.calculate)
+  builder.addCalculation('Activity', Icons.calculate)
     ..inputs.add(exposure)
     ..inputs.add(E)
     ..inputs.add(N)
-    ..outputs.add(solveForCuries);
+    ..outputs.add(solveForActivity);
 
   builder.addCalculation('Photon Energy (MeV)', Icons.calculate)
     ..inputs.add(exposure)

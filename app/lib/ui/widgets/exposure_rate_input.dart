@@ -6,34 +6,25 @@ import 'package:signals_hooks/signals_hooks.dart';
 import '../calculators/base_calc.dart';
 import 'double_input.dart';
 
-enum ActivityType {
-  dps('dps', 'DPS'),
-  dpm('dpm', 'DPM'),
-  ci('Ci', 'Curies'),
-  pCi('pCi', 'Pico Curies'),
-  nCi('nCi', 'Nano Curies'),
-  uCi('uCi', 'Micro Curies'),
-  mCi('mCi', 'Milli Curies'),
-  bq('Bq', 'Becquerels'),
-  kBq('kBq', 'Kilo Becquerels'),
-  mBq('MBq', 'Mega Becquerels'),
-  gBq('GBq', 'Giga Becquerels'),
-  tBq('TBq', 'Tera Becquerels');
+enum ExposureRateType {
+  rH('R/hr', 'R/hr'),
+  mRH('mR/hr', 'mR/hr'),
+  uRH('uR/hr', 'uR/hr');
 
-  const ActivityType(this.unit, this.displayName);
+  const ExposureRateType(this.unit, this.displayName);
   final String unit;
   final String displayName;
 }
 
-class ActivityInput extends DoubleInput {
-  const ActivityInput({
+class ExposureRateInput extends DoubleInput {
+  const ExposureRateInput({
     super.key,
     required super.value,
     required super.label,
   });
 
-  static ActivityInput fromCoreValue(CoreValue<double> value) {
-    return ActivityInput(
+  static ExposureRateInput fromCoreValue(CoreValue<double> value) {
+    return ExposureRateInput(
       value: value.source,
       label: value.label,
     );
@@ -41,12 +32,12 @@ class ActivityInput extends DoubleInput {
 
   @override
   Widget build(BuildContext context) {
-    final options = useSignal(ActivityType.values);
-    final selected = useSignal<ActivityType>(ActivityType.ci);
+    final options = useSignal(ExposureRateType.values);
+    final selected = useSignal<ExposureRateType>(ExposureRateType.rH);
 
     final raw = useExistingSignal(value);
     final controller = useTextEditingController(
-      text: convertFromCuries(
+      text: convertFromReontgenPerHour(
         selected.value,
         raw.value ?? 0,
       ).toStringAsPrecision(3),
@@ -54,7 +45,7 @@ class ActivityInput extends DoubleInput {
 
     useSignalEffect(() {
       selected.value;
-      controller.text = untracked(() => convertFromCuries(
+      controller.text = untracked(() => convertFromReontgenPerHour(
             selected.value,
             raw.value ?? 0,
           ).toString());
@@ -71,7 +62,7 @@ class ActivityInput extends DoubleInput {
           .toList(),
       value: selected.value,
       onChanged: (value) {
-        selected.value = value as ActivityType;
+        selected.value = value as ExposureRateType;
       },
     );
 
@@ -80,7 +71,7 @@ class ActivityInput extends DoubleInput {
         title: Text(label),
         subtitle: SelectableText(raw.value == null
             ? 'N/A'
-            : convertToCuries(
+            : convertToReontgenPerHour(
                 selected.value,
                 raw.value!,
               ).toStringAsPrecision(3)),
@@ -101,7 +92,7 @@ class ActivityInput extends DoubleInput {
         onSaved: (value) {
           final target = this.value;
           if (target is Signal<double?>) {
-            target.value = convertToCuries(
+            target.value = convertToReontgenPerHour(
               selected.value,
               num.tryParse(value!)?.toDouble() ?? 0,
             );
@@ -110,7 +101,7 @@ class ActivityInput extends DoubleInput {
         onChanged: (value) {
           final target = this.value;
           if (target is Signal<double?>) {
-            target.value = convertToCuries(
+            target.value = convertToReontgenPerHour(
               selected.value,
               num.tryParse(value)?.toDouble() ?? 0,
             );
@@ -127,44 +118,18 @@ class ActivityInput extends DoubleInput {
   }
 }
 
-double dpsToBq(double val) => val;
-
-double bqToDps(double val) => val;
-
-double bqToCi(double val) => val / 3.7e10;
-
-double ciToBq(double val) => val * 3.7e10;
-
-double convertFromCuries(ActivityType type, double val) {
+double convertToReontgenPerHour(ExposureRateType type, double val) {
   return switch (type) {
-    ActivityType.dps => bqToDps(ciToBq(val)),
-    ActivityType.dpm => val * 2.22e12,
-    ActivityType.ci => val,
-    ActivityType.pCi => val * 1e12,
-    ActivityType.nCi => val * 1e9,
-    ActivityType.uCi => val * 1e6,
-    ActivityType.mCi => val * 1e3,
-    ActivityType.bq => ciToBq(val),
-    ActivityType.kBq => ciToBq(val) / 1e3,
-    ActivityType.mBq => ciToBq(val) / 1e6,
-    ActivityType.gBq => ciToBq(val) / 1e9,
-    ActivityType.tBq => ciToBq(val) / 1e12,
+    ExposureRateType.rH => val,
+    ExposureRateType.mRH => val / 1000,
+    ExposureRateType.uRH => val / 1000 / 1000,
   };
 }
 
-double convertToCuries(ActivityType type, double val) {
+double convertFromReontgenPerHour(ExposureRateType type, double val) {
   return switch (type) {
-    ActivityType.dps => bqToCi(dpsToBq(val)),
-    ActivityType.dpm => val / 2.22e12,
-    ActivityType.ci => val,
-    ActivityType.pCi => val / 1e12,
-    ActivityType.nCi => val / 1e9,
-    ActivityType.uCi => val / 1e6,
-    ActivityType.mCi => val / 1e3,
-    ActivityType.bq => bqToCi(val),
-    ActivityType.kBq => bqToCi(val) * 1e3,
-    ActivityType.mBq => bqToCi(val) * 1e6,
-    ActivityType.gBq => bqToCi(val) * 1e9,
-    ActivityType.tBq => bqToCi(val) * 1e12,
+    ExposureRateType.rH => val,
+    ExposureRateType.mRH => val * 1000,
+    ExposureRateType.uRH => val * 1000 * 1000,
   };
 }

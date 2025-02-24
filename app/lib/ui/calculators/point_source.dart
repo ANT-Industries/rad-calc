@@ -5,6 +5,7 @@ import 'dart:math' as math;
 
 import '../widgets/double_input.dart';
 import '../widgets/distance_input.dart';
+import '../widgets/exposure_rate_input.dart';
 import 'base_calc.dart';
 
 BaseCalc buildPointSource() {
@@ -14,7 +15,7 @@ BaseCalc buildPointSource() {
     'Exposure Rate 1',
     1,
     (val) {
-      return DoubleInput(
+      return ExposureRateInput(
         label: 'Exposure Rate 1',
         value: val,
       );
@@ -25,7 +26,7 @@ BaseCalc buildPointSource() {
     'Exposure Rate 2',
     10,
     (val) {
-      return DoubleInput(
+      return ExposureRateInput(
         label: 'Exposure Rate 2',
         value: val,
       );
@@ -60,7 +61,7 @@ BaseCalc buildPointSource() {
       math.pow((distance2()/ distance1()), 2));
     }, 0);
   }, (val) {
-    return DoubleInput(
+    return ExposureRateInput(
       label: 'Exposure Rate 1',
       value: val,
     );
@@ -73,7 +74,7 @@ BaseCalc buildPointSource() {
       math.pow((distance1()/ distance2()), 2));
     }, 0);
   }, (val) {
-      return DoubleInput(
+      return ExposureRateInput(
         label: 'Exposure Rate 2',
         value: val,
       );
