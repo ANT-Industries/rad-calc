@@ -9,6 +9,7 @@ import 'calculators/base_calc.dart';
 import 'calculators/half_life.dart';
 import 'calculators/point_source.dart';
 import 'calculators/line_source.dart';
+import 'calculators/plane_source.dart';
 import 'calculators/six_cen.dart';
 import 'calculators/stay_time.dart';
 
@@ -28,6 +29,7 @@ class Home extends HookWidget {
       buildHalfLife(),
       buildPointSource(),
       buildLineSource(),
+      buildPlaneSource(),
       buildSixCen(),
       buildStayTime(),
       buildShielding(),
