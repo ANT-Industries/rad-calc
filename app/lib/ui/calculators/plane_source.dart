@@ -86,31 +86,38 @@ BaseCalc buildPlaneSource() {
 
   final solveForexposureRate2 = Output<double>('Exposure Rate 2', () {
   return safeCalc(() {
+    double r1 = radius() * .1;
+    double r7 = radius() * .7;
     if (distance1() < distance2()) {
-      if (distance2() <= (radius() * 0.1)) {
+      if (distance2() <= r1 || ((distance1() > r1 && distance1() <= r7) && (distance2() > r1 && distance1() <= r7)) || distance1() == distance2()) {
         return exposureRate1();
-      } else if (distance2() > (radius() * 0.1) && distance2() <= (radius() * 0.7) && distance1() <= (radius() * 0.1)) {
+      } else if (distance1() <= r1 && distance2() > r1 && distance2() <= r7) {
         return exposureRate1() / 3;
-      } else if (distance2() >= (radius() * 0.7) && distance1() <= (radius() * 0.7)) {
-      return exposureRate1() * math.pow((radius()* 0.7) / distance2(), 2);
-      } else if (distance1() >= (radius() * 0.7) ) {
+      } else if (distance1() <= r1 && distance2() > r7) {
+      return (exposureRate1()/3) * math.pow(r7 / distance2(), 2);
+      } else if (distance1() > r1 && distance1() <= r7 && distance2() > r7) {
+        return exposureRate1() * math.pow(r7 / distance2(), 2);
+      } else if (distance1() > r7) {
         return exposureRate1() * math.pow(distance1() / distance2(), 2);
-      } else {
-        return exposureRate1();
       }
-    } else if (distance1() > distance2()) { 
-      if (distance1() <= (radius() * 0.1)) {
+      return exposureRate1();  }
+    if (distance1() > distance2()) {
+      if (distance1() <= r1 || ((distance2() > r1 && distance2() <= r7) && (distance1() > r1 && distance2() <= r7)) || distance2() == distance1()) {
         return exposureRate1();
-      } else if (distance1() > (radius() * 0.1) && distance1() <= (radius() * 0.7) && distance2() <= (radius() * 0.1)) {
+      } else if (distance2() <= r1 && distance1() > r1 && distance1() <= r7) {
         return exposureRate1() / 3;
-      } else if (distance2() >= (radius() * 0.7) && distance2() <= (radius() * 0.7)) {
-        return exposureRate1() * math.pow(distance1() / distance2(), 2);
-      } else {  
-        return exposureRate1();
+      } else if (distance2() <= r1 && distance1() > r7) {
+        return (exposureRate1()/3) * math.pow(r7 / distance1(), 2);
+      } else if (distance2() > r1 && distance2() <= r7 && distance1() > r7) {
+        return exposureRate1() * math.pow(r7 / distance1(), 2);
+      } else if (distance2() > r7) {
+        return exposureRate1() * math.pow(distance2() / distance1(), 2);
       }
-    } else {
-      return exposureRate1();
+      return exposureRate1(); 
     }
+  else {
+    return exposureRate1();
+  }
   }, 0);
 }, (val) {
   return ExposureRateInput(
