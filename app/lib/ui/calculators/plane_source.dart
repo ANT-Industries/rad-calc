@@ -89,7 +89,7 @@ BaseCalc buildPlaneSource() {
     double r1 = radius() * .1;
     double r7 = radius() * .7;
     if (distance1() < distance2()) {
-      if (distance2() <= r1 || ((distance1() > r1 && distance1() <= r7) && (distance2() > r1 && distance1() <= r7)) || distance1() == distance2()) {
+      if (distance2() <= r1 || ((distance1() > r1 && distance1() <= r7) && (distance2() > r1 && distance1() <= r7))) {
         return exposureRate1();
       } else if (distance1() <= r1 && distance2() > r1 && distance2() <= r7) {
         return exposureRate1() / 3;
@@ -102,7 +102,7 @@ BaseCalc buildPlaneSource() {
       }
       return exposureRate1();  }
     if (distance1() > distance2()) {
-      if (distance1() <= r1 || ((distance2() > r1 && distance2() <= r7) && (distance1() > r1 && distance2() <= r7)) || distance2() == distance1()) {
+      if (distance1() <= r1 || ((distance2() > r1 && distance2() <= r7) && (distance1() > r1 && distance2() <= r7))) {
         return exposureRate1();
       } else if (distance2() <= r1 && distance1() > r1 && distance1() <= r7) {
         return exposureRate1() / 3;
