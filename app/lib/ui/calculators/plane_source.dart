@@ -9,15 +9,15 @@ import '../widgets/distance_input.dart';
 import '../widgets/exposure_rate_input.dart';
 import 'base_calc.dart';
 
-BaseCalc buildLineSource() {
-  final builder = BaseCalcBuilder('Line Source');
+BaseCalc buildPlaneSource() {
+  final builder = BaseCalcBuilder('Plane Source');
   
-  final length = Input<double>(
-    'Length',
+  final radius = Input<double>(
+    'radius',
     10.0,
     (val) {
       return DistanceInput(
-        label: 'Length of Source',
+        label: 'Effective radius',
         value: val,
       );
     },
@@ -69,11 +69,11 @@ BaseCalc buildLineSource() {
 
   // final solveForexposureRate1 = Output<double>('Exposure Rate 1', () {
   //   return safeCalc(() {
-  //   if (distance1()<= (length() / 2)) {
+  //   if (distance1()<= (radius() / 2)) {
   //     return exposureRate2() * (distance2() / distance1());
   //   } else {
-  //     double exposureRateL2 = exposureRate2() * (distance2() / (length() / 2));
-  //     return exposureRateL2  * math.pow(((length() / 2) / distance1()), 2);
+  //     double exposureRateL2 = exposureRate2() * (distance2() / (radius() / 2));
+  //     return exposureRateL2  * math.pow(((radius() / 2) / distance1()), 2);
   //   }
   // }, 0);
   // }, (val) {
@@ -86,23 +86,38 @@ BaseCalc buildLineSource() {
 
   final solveForexposureRate2 = Output<double>('Exposure Rate 2', () {
   return safeCalc(() {
+    double r1 = radius() * .1;
+    double r7 = radius() * .7;
     if (distance1() < distance2()) {
-      if (distance1() <= (length() / 2)) {
-        return exposureRate1() * (distance1() / distance2());
-      } else {
-        double exposureRateL2 = exposureRate1() * (distance1() / (length() / 2));
-        return exposureRateL2 * math.pow(((length() / 2) / distance2()), 2);
+      if (distance2() <= r1 || ((distance1() > r1 && distance1() <= r7) && (distance2() > r1 && distance1() <= r7))) {
+        return exposureRate1();
+      } else if (distance1() <= r1 && distance2() > r1 && distance2() <= r7) {
+        return exposureRate1() / 3;
+      } else if (distance1() <= r1 && distance2() > r7) {
+      return (exposureRate1()/3) * math.pow(r7 / distance2(), 2);
+      } else if (distance1() > r1 && distance1() <= r7 && distance2() > r7) {
+        return exposureRate1() * math.pow(r7 / distance2(), 2);
+      } else if (distance1() > r7) {
+        return exposureRate1() * math.pow(distance1() / distance2(), 2);
       }
-    } if (distance1() > distance2()) { 
-      if (distance2() > (length() / 2)) {
-        return exposureRate1() * math.pow(distance1() / (length() / 2), 2);
-      } else {
-        double exposureRateL2 = exposureRate1() * math.pow(distance1() / (length() / 2), 2);
-        return exposureRateL2 * ((length() / 2) / distance2());
+      return exposureRate1();  }
+    if (distance1() > distance2()) {
+      if (distance1() <= r1 || ((distance2() > r1 && distance2() <= r7) && (distance1() > r1 && distance2() <= r7))) {
+        return exposureRate1();
+      } else if (distance2() <= r1 && distance1() > r1 && distance1() <= r7) {
+        return exposureRate1() / 3;
+      } else if (distance2() <= r1 && distance1() > r7) {
+        return (exposureRate1()/3) * math.pow(r7 / distance1(), 2);
+      } else if (distance2() > r1 && distance2() <= r7 && distance1() > r7) {
+        return exposureRate1() * math.pow(r7 / distance1(), 2);
+      } else if (distance2() > r7) {
+        return exposureRate1() * math.pow(distance2() / distance1(), 2);
       }
-    } else {
-      return exposureRate1();
+      return exposureRate1(); 
     }
+  else {
+    return exposureRate1();
+  }
   }, 0);
 }, (val) {
   return ExposureRateInput(
@@ -114,19 +129,19 @@ BaseCalc buildLineSource() {
   // final solveFordistance1 = Output<double>('Distance 1', () {
   // return safeCalc(() {
   //   if (exposureRate1() > exposureRate2()) {
-  //     if (distance2() <= (length() / 2)) {   
+  //     if (distance2() <= (radius() / 2)) {   
   //       return (exposureRate2() / exposureRate1()) * distance2();
   //     }
   //     else{
-  //     double exposureRateL2 = exposureRate2() * math.pow((distance2()/(length()/2)),2);
-  //     return (exposureRateL2/ exposureRate1()) * (length() / 2);
+  //     double exposureRateL2 = exposureRate2() * math.pow((distance2()/(radius()/2)),2);
+  //     return (exposureRateL2/ exposureRate1()) * (radius() / 2);
   //     }
   //   } if (exposureRate1() < exposureRate2()) {                                                                                                                                                                                                                      
-  //     if (distance1() <= (length() / 2)) {
+  //     if (distance1() <= (radius() / 2)) {
   //       return (exposureRate2() / exposureRate1()) * distance2();
   //     }
   //     else{
-  //     double exposureRateL2 = exposureRate2() * (distance2() / (length() / 2));
+  //     double exposureRateL2 = exposureRate2() * (distance2() / (radius() / 2));
   //     return math.sqrt((exposureRateL2/ exposureRate1()) * 
   //     math.pow(distance2(),2));
   //     }
@@ -145,19 +160,19 @@ BaseCalc buildLineSource() {
   final solveFordistance2 = Output<double>('Distance 2', () {
   return safeCalc(() {
     if (exposureRate2() > exposureRate1()) {
-      if (distance1() <= (length() / 2)) {   
+      if (distance1() <= (radius() / 2)) {   
         return (exposureRate1() / exposureRate2()) * distance1();
       }
       else{
-      double exposureRateL2 = exposureRate1() * math.pow((distance1()/(length()/2)),2);
-      return (exposureRateL2/ exposureRate2()) * (length() / 2);
+      double exposureRateL2 = exposureRate1() * math.pow((distance1()/(radius()/2)),2);
+      return (exposureRateL2/ exposureRate2()) * (radius() / 2);
       }
     } if (exposureRate2() < exposureRate1()) {                                                                                                                                                                                                                      
-      if (distance2() <= (length() / 2)) {
+      if (distance2() <= (radius() / 2)) {
         return (exposureRate1() / exposureRate2()) * distance1();
       }
       else{
-      double exposureRateL2 = exposureRate1() * (distance1() / (length() / 2));
+      double exposureRateL2 = exposureRate1() * (distance1() / (radius() / 2));
       return math.sqrt((exposureRateL2/ exposureRate2()) * 
       math.pow(distance1(),2));
       }
@@ -205,7 +220,7 @@ BaseCalc buildLineSource() {
   }
 
   // builder.addCalculation('Exposure Rate 1', Icons.calculate)
-  //   ..inputs.add(length)
+  //   ..inputs.add(radius)
   //   ..inputs.add(exposureRate2)
   //   ..inputs.add(distance1)
   //   ..inputs.add(distance2)
@@ -218,7 +233,7 @@ BaseCalc buildLineSource() {
   //   ));
 
   builder.addCalculation('Exposure Rate 2', Icons.calculate)
-    ..inputs.add(length)
+    ..inputs.add(radius)
     ..inputs.add(exposureRate1)
     ..inputs.add(distance1)
     ..inputs.add(distance2)
@@ -231,7 +246,7 @@ BaseCalc buildLineSource() {
     ));
 
   // builder.addCalculation('Distance 1', Icons.calculate)
-  //   ..inputs.add(length)
+  //   ..inputs.add(radius)
   //   ..inputs.add(exposureRate1)
   //   ..inputs.add(exposureRate2)
   //   ..inputs.add(distance2)
@@ -244,7 +259,7 @@ BaseCalc buildLineSource() {
   //   ));
 
   builder.addCalculation('Distance 2', Icons.calculate)
-    ..inputs.add(length)
+    ..inputs.add(radius)
     ..inputs.add(exposureRate1)
     ..inputs.add(exposureRate2)
     ..inputs.add(distance1)
