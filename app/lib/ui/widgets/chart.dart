@@ -35,8 +35,8 @@ class Chart extends HookWidget {
                   [
                     charts.Series<({double x, double y}), double>(
                       id: label,
-                      domainFn: (data, _) => data.y,
-                      measureFn: (data, _) => data.x,
+                      domainFn: (data, _) => data.x,
+                      measureFn: (data, _) => data.y,
                       data: src.watch(context),
                       seriesColor:
                           charts.ColorUtil.fromDartColor(colors.primary),
