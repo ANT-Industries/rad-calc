@@ -3,7 +3,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:signals_hooks/signals_hooks.dart';
 
-import '../calculators/base_calc.dart';
 import 'double_input.dart';
 
 enum ActivityType {
@@ -30,12 +29,15 @@ class ActivityInput extends DoubleInput {
     super.key,
     required super.value,
     required super.label,
+    this.initialUnit = ActivityType.ci,
   });
+
+  final ActivityType initialUnit;
 
   @override
   Widget build(BuildContext context) {
     final options = useSignal(ActivityType.values);
-    final selected = useSignal<ActivityType>(ActivityType.ci);
+    final selected = useSignal<ActivityType>(initialUnit);
 
     final raw = useExistingSignal(value);
     final controller = useTextEditingController(

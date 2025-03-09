@@ -22,12 +22,15 @@ class TimeInput extends DoubleInput {
     super.key,
     required super.value,
     required super.label,
+    this.initialUnit = TimeType.s,
   });
+
+  final TimeType initialUnit;
 
   @override
   Widget build(BuildContext context) {
     final options = useSignal(TimeType.values);
-    final selected = useSignal<TimeType>(TimeType.s);
+    final selected = useSignal<TimeType>(initialUnit);
 
     final raw = useExistingSignal(value);
     final controller = useTextEditingController(
