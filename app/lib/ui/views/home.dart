@@ -1,17 +1,13 @@
-import 'package:app/ui/calculators/shielding.dart';
-import 'package:app/ui/calculators/six_cen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:signals_hooks/signals_hooks.dart';
 
-import 'calculators/base_calc.dart';
-import 'calculators/half_life.dart';
-import 'calculators/point_source.dart';
-import 'calculators/line_source.dart';
-import 'calculators/plane_source.dart';
-import 'calculators/six_cen.dart';
-import 'calculators/stay_time.dart';
+import 'calcs/base.dart';
+import 'calcs/half_life/half_life.dart';
+import 'calcs/half_life/final_activity.dart';
+import 'calcs/half_life/initial_activity.dart';
+import 'calcs/half_life/time.dart';
 
 class Home extends HookWidget {
   const Home({
@@ -26,20 +22,17 @@ class Home extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final calculators = useSignal(<BaseCalc>[
-      buildHalfLife(),
-      buildPointSource(),
-      buildLineSource(),
-      buildPlaneSource(),
-      buildSixCen(),
-      buildStayTime(),
-      buildShielding(),
+      HalfLifeFinalActivity(),
+      HalfLifeInitialActivity(),
+      HalfLifeTime(),
+      HalfLifeHalfLife(),
     ]);
     final searchController = useTextEditingController();
     final query = useExistingSignal(searchController.toSignal());
     final filtered = useComputed(() {
       final q = query.value.text.toLowerCase();
       return calculators.value.where((e) {
-        return e.name.toLowerCase().contains(q);
+        return e.title.toLowerCase().contains(q);
       }).toList();
     });
     final selectedCalc = useSignal<BaseCalc?>(null);
@@ -117,8 +110,9 @@ class Home extends HookWidget {
                   itemBuilder: (context, index) {
                     final calc = filtered.value[index];
                     return ListTile(
-                      title: Text(calc.name),
+                      title: Text(calc.title),
                       trailing: const Icon(Icons.chevron_right),
+                      selected: selectedCalc.value == calc,
                       onTap: () {
                         final nav = Navigator.of(context);
                         if (showOnlyList) {

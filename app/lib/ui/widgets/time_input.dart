@@ -3,7 +3,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:signals/signals_flutter.dart';
 import 'package:signals_hooks/signals_hooks.dart';
 
-import '../calculators/base_calc.dart';
 import 'double_input.dart';
 
 enum TimeType {
@@ -25,13 +24,6 @@ class TimeInput extends DoubleInput {
     required super.label,
   });
 
-  static TimeInput fromCoreValue(CoreValue<double> value) {
-    return TimeInput(
-      value: value.source,
-      label: value.label,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final options = useSignal(TimeType.values);
@@ -47,10 +39,18 @@ class TimeInput extends DoubleInput {
 
     useSignalEffect(() {
       selected.value;
-      controller.text = untracked(() => convertFromSeconds(
-            selected.value,
-            raw.value ?? 0,
-          ).toString());
+      void update() {
+        controller.text = convertFromSeconds(
+          selected.value,
+          raw.value ?? 0,
+        ).toString();
+      }
+
+      if (super.readonly) {
+        update();
+      } else {
+        untracked(update);
+      }
     });
 
     final Widget selector = DropdownButton(
@@ -68,23 +68,24 @@ class TimeInput extends DoubleInput {
       },
     );
 
-    if (super.readonly) {
-      return ListTile(
-        title: Text(label),
-        subtitle: SelectableText(raw.value == null
-            ? 'N/A'
-            : convertToSeconds(
-                selected.value,
-                raw.value!,
-              ).toStringAsPrecision(3)),
-        trailing: selector,
-      );
-    }
+    // if (super.readonly) {
+    //   return ListTile(
+    //     title: Text(label),
+    //     subtitle: SelectableText(raw.value == null
+    //         ? 'N/A'
+    //         : convertToSeconds(
+    //             selected.value,
+    //             raw.value!,
+    //           ).toStringAsPrecision(3)),
+    //     trailing: selector,
+    //   );
+    // }
 
     return ListTile(
       title: Text(label),
       subtitle: TextFormField(
         controller: controller,
+        readOnly: super.readonly,
         validator: (value) {
           if (value == null || value.isEmpty || num.tryParse(value) == null) {
             return 'Please enter a valid number';

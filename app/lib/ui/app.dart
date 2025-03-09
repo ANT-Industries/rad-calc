@@ -3,7 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:signals_hooks/signals_hooks.dart';
 
 import '../data/signals/saved_signal.dart';
-import 'home.dart';
+import 'views/home.dart';
 
 class App extends HookWidget {
   const App({super.key});

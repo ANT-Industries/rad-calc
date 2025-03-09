@@ -6,8 +6,6 @@ import 'package:signals_hooks/signals_hooks.dart';
 import 'package:community_charts_flutter/community_charts_flutter.dart'
     as charts;
 
-import '../../data/signals/saved_signal.dart';
-
 class BaseCalcBuilder {
   static late BaseCalcBuilder current;
   String name;
@@ -22,11 +20,11 @@ class BaseCalcBuilder {
 
   BaseCalcWidget build() {
     final base = BaseCalcWidget(this);
-    for (final calc in calculations) {
-      for (final core in calc.inputs) {
-        core.source.key = '${core.source.key}|$seed';
-      }
-    }
+    // for (final calc in calculations) {
+    //   for (final core in calc.inputs) {
+    //     core.source.key = '${core.source.key}|$seed';
+    //   }
+    // }
     return base;
   }
 
@@ -77,7 +75,7 @@ T safeCalc<T extends num>(T Function() cb, T fallback) {
 
 class Input<T> extends CoreValue<T> {
   @override
-  SavedSignal<T> source;
+  Signal<T> source;
 
   @override
   String label;
@@ -86,8 +84,8 @@ class Input<T> extends CoreValue<T> {
   CoreValueBuilder<ReadonlySignal<T>> builder;
 
   Input(this.label, T initialValue, this.builder)
-      : source = SavedSignal<T>(
-          '${BaseCalcBuilder.current.name}|$label',
+      : source = signal<T>(
+          // '${BaseCalcBuilder.current.name}|$label',
           initialValue,
         );
 }

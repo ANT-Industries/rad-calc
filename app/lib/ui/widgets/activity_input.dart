@@ -32,13 +32,6 @@ class ActivityInput extends DoubleInput {
     required super.label,
   });
 
-  static ActivityInput fromCoreValue(CoreValue<double> value) {
-    return ActivityInput(
-      value: value.source,
-      label: value.label,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final options = useSignal(ActivityType.values);
@@ -54,10 +47,19 @@ class ActivityInput extends DoubleInput {
 
     useSignalEffect(() {
       selected.value;
-      controller.text = untracked(() => convertFromCuries(
-            selected.value,
-            raw.value ?? 0,
-          ).toString());
+
+      void update() {
+        controller.text = convertFromCuries(
+          selected.value,
+          raw.value ?? 0,
+        ).toString();
+      }
+
+      if (super.readonly) {
+        update();
+      } else {
+        untracked(update);
+      }
     });
 
     final Widget selector = DropdownButton(
@@ -75,23 +77,11 @@ class ActivityInput extends DoubleInput {
       },
     );
 
-    if (super.readonly) {
-      return ListTile(
-        title: Text(label),
-        subtitle: SelectableText(raw.value == null
-            ? 'N/A'
-            : convertToCuries(
-                selected.value,
-                raw.value!,
-              ).toStringAsPrecision(3)),
-        trailing: selector,
-      );
-    }
-
     return ListTile(
       title: Text(label),
       subtitle: TextFormField(
         controller: controller,
+        readOnly: super.readonly,
         validator: (value) {
           if (value == null || value.isEmpty || num.tryParse(value) == null) {
             return 'Please enter a valid number';
