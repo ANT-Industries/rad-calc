@@ -111,6 +111,16 @@ class Home extends HookWidget {
                     final calc = filtered.value[index];
                     return ListTile(
                       title: Text(calc.title),
+                      // subtitle: Padding(
+                      //   padding: const EdgeInsets.only(top: 8.0),
+                      //   child: Wrap(
+                      //     runSpacing: 8,
+                      //     spacing: 8,
+                      //     children: [
+                      //       for (final tag in calc.tags) Chip(label: Text(tag)),
+                      //     ],
+                      //   ),
+                      // ),
                       trailing: const Icon(Icons.chevron_right),
                       selected: selectedCalc.value == calc,
                       onTap: () {
