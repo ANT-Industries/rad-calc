@@ -1,3 +1,5 @@
+import 'package:signals/signals.dart';
+
 const Map<String, Map<int, double>> hvlTable = {
   'Lead': {
     500: 0.38,
@@ -28,3 +30,13 @@ const Map<String, Map<int, double>> hvlTable = {
     3000: 17.5,
   },
 };
+
+const materials = ['Lead', 'Iron', 'Concrete', 'Water'];
+
+// Inputs
+final material = signal(materials.first);
+final level = signal(500);
+
+// Outputs
+final hvl = computed(() => hvlTable[material()]!);
+final result = computed(() => hvl()[level()]!);
