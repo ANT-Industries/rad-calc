@@ -18,31 +18,37 @@ class Chart extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final src = useExistingSignal(source);
-    return Watch((context) {
-      final colors = Theme.of(context).colorScheme;
-      return Padding(
-        padding: const EdgeInsets.all(8),
-        child: ClipRect(
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(
-              maxHeight: 400,
-              maxWidth: double.infinity,
-            ),
-            child: charts.LineChart(
-              [
-                charts.Series<({double x, double y}), double>(
-                  id: label,
-                  domainFn: (data, _) => data.y,
-                  measureFn: (data, _) => data.x,
-                  data: src.watch(context),
-                  seriesColor: charts.ColorUtil.fromDartColor(colors.primary),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        child: Watch((context) {
+          final colors = Theme.of(context).colorScheme;
+          return Padding(
+            padding: const EdgeInsets.all(8),
+            child: ClipRect(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 400,
+                  maxWidth: double.infinity,
                 ),
-              ],
-              animate: true,
+                child: charts.LineChart(
+                  [
+                    charts.Series<({double x, double y}), double>(
+                      id: label,
+                      domainFn: (data, _) => data.y,
+                      measureFn: (data, _) => data.x,
+                      data: src.watch(context),
+                      seriesColor:
+                          charts.ColorUtil.fromDartColor(colors.primary),
+                    ),
+                  ],
+                  animate: true,
+                ),
+              ),
             ),
-          ),
-        ),
-      );
-    });
+          );
+        }),
+      ),
+    );
   }
 }
