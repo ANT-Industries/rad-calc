@@ -51,10 +51,11 @@ class ActivityInput extends DoubleInput {
       selected.value;
 
       void update() {
-        controller.text = convertFromCuries(
+        final val = convertFromCuries(
           selected.value,
           raw.value ?? 0,
-        ).toString();
+        );
+        controller.text = val.isNaN ? '' : val.toString();
       }
 
       if (super.readonly) {

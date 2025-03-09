@@ -22,10 +22,15 @@ class Home extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final calculators = useSignal(<BaseCalc>[
-      HalfLifeFinalActivity(),
-      HalfLifeInitialActivity(),
-      HalfLifeTime(),
-      HalfLifeHalfLife(),
+      GroupCalc(
+        title: 'Half Life',
+        calcs: [
+          HalfLifeHalfLife(),
+          HalfLifeInitialActivity(),
+          HalfLifeFinalActivity(),
+          HalfLifeTime(),
+        ],
+      ),
     ]);
     final searchController = useTextEditingController();
     final query = useExistingSignal(searchController.toSignal());

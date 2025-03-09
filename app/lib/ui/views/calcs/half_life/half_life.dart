@@ -12,7 +12,7 @@ class HalfLifeHalfLife extends BaseCalc {
   HalfLifeHalfLife({super.key});
 
   @override
-  String get title => 'Half Life (Default)';
+  String get title => 'Half Life';
 
   @override
   List<String> get tags => [

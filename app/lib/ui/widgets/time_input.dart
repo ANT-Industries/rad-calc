@@ -43,10 +43,12 @@ class TimeInput extends DoubleInput {
     useSignalEffect(() {
       selected.value;
       void update() {
-        controller.text = convertFromSeconds(
+        final val = convertFromSeconds(
           selected.value,
           raw.value ?? 0,
-        ).toString();
+        );
+
+        controller.text = val.isNaN ? '' : val.toString();
       }
 
       if (super.readonly) {

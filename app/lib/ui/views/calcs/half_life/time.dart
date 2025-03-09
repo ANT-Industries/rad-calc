@@ -12,7 +12,7 @@ class HalfLifeTime extends BaseCalc {
   HalfLifeTime({super.key});
 
   @override
-  String get title => 'Half Life (Time)';
+  String get title => 'Time';
 
   @override
   List<String> get tags => [

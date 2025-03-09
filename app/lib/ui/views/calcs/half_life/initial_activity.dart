@@ -12,7 +12,7 @@ class HalfLifeInitialActivity extends BaseCalc {
   HalfLifeInitialActivity({super.key});
 
   @override
-  String get title => 'Half Life (Initial Activity)';
+  String get title => 'Initial Activity';
 
   @override
   List<String> get tags => [

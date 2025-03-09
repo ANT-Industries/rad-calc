@@ -12,7 +12,7 @@ class HalfLifeFinalActivity extends BaseCalc {
   HalfLifeFinalActivity({super.key});
 
   @override
-  String get title => 'Half Life (Final Activity)';
+  String get title => 'Final Activity';
 
   @override
   List<String> get tags => [
