@@ -153,7 +153,7 @@ BaseCalc buildLineSource() {
       return (exposureRateL2/ exposureRate2()) * (length() / 2);
       }
     } if (exposureRate2() < exposureRate1()) {                                                                                                                                                                                                                      
-      if (distance2() <= (length() / 2)) {
+      if (distance1() <= (length() / 2)) {
         return (exposureRate1() / exposureRate2()) * distance1();
       }
       else{
