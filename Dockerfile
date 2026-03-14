@@ -23,7 +23,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /app/rad-calc main.go
 FROM alpine:latest
 
 # Add security updates and CA certificates
-RUN apk --no-cache add ca-certificates tzdata
+RUN apk --no-cache add ca-certificates tzdata wget
 
 WORKDIR /app
 
@@ -34,8 +34,8 @@ COPY --from=builder /app/rad-calc .
 EXPOSE 8080
 
 # Set healthcheck
-HEALTHCHECK --interval=30s --timeout=3s \
-  CMD wget --quiet --tries=1 --spider http://localhost:8080/ || exit 1
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD wget --quiet --tries=1 --spider http://127.0.0.1:8080/ || exit 1
 
 # Run the binary
 ENTRYPOINT ["./rad-calc", "-http", "-port", "8080"]
