@@ -31,11 +31,11 @@ WORKDIR /app
 COPY --from=builder /app/rad-calc .
 
 # Expose the default port
-EXPOSE 8080
+EXPOSE 8081
 
 # Set healthcheck
 HEALTHCHECK --interval=30s --timeout=3s \
-  CMD wget --quiet --tries=1 --spider http://localhost:8080/ || exit 1
+  CMD wget --quiet --tries=1 --spider http://localhost:8081/ || exit 1
 
 # Run the binary
-ENTRYPOINT ["./rad-calc", "-http", "-port", "8080"]
+ENTRYPOINT ["./rad-calc", "-http", "-port", "8081"]
