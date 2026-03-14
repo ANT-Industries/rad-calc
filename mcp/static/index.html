@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>rad-calc MCP Server & Tools</title>
+    <link rel="stylesheet" href="/styles.css">
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Mobile Header -->
+        <div class="mobile-nav">
+            <h2>rad-calc</h2>
+            <button id="mobile-menu-btn" aria-label="Toggle Navigation">☰</button>
+        </div>
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>rad-calc</h2>
+                <span class="badge">MCP Ready</span>
+            </div>
+            <nav id="nav-links">
+                <a href="#" class="nav-item active" data-target="home">Overview</a>
+                <a href="#" class="nav-item" data-target="mcp-server">MCP Server</a>
+                <!-- Tool links injected via JS -->
+            </nav>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="content">
+            <!-- Home Section -->
+            <section id="home" class="page-section active">
+                <header>
+                    <h1>rad-calc MCP Server</h1>
+                    <p>Health Physics calculators exposed as an interactive GUI and Model Context Protocol Server.</p>
+                </header>
+
+                <div class="tools-grid" id="tools-overview-grid">
+                    <!-- Cards injected by JS -->
+                </div>
+            </section>
+
+            <!-- MCP Server Section -->
+            <section id="mcp-server" class="page-section">
+                <header>
+                    <h1>MCP Server Integration</h1>
+                    <p>Connect AI assistants to rad-calc</p>
+                </header>
+
+                <div class="card">
+                    <h3>How to install / use as MCP</h3>
+                    <p>This server can be used directly by AI assistants (like Claude Desktop) through the Model Context Protocol.</p>
+                    
+                    <h4>Stdio Mode Configuration:</h4>
+                    <pre><code>{
+  "mcpServers": {
+    "rad-calc": {
+      "command": "/absolute/path/to/bin/rad-calc"
+    }
+  }
+}</code></pre>
+                     <h4>HTTP/Remote Mode Configuration:</h4>
+                     <pre><code id="mcp-config-http">{
+  "mcpServers": {
+    "rad-calc": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "http://localhost:8080/mcp/sse"
+      ]
+    }
+  }
+}</code></pre>
+                </div>
+            </section>
+
+            <!-- Tool Template Section (Hidden by default) -->
+            <section id="tool-view" class="page-section">
+                <header>
+                    <h1 id="tool-title">Tool Name</h1>
+                    <p id="tool-description">Tool Description</p>
+                </header>
+
+                <div class="tool-content">
+                    <div class="form-card card">
+                        <h3>Calculator Input</h3>
+                        <form id="calc-form">
+                            <!-- Inputs injected by JS -->
+                        </form>
+                    </div>
+
+                    <div class="results-card card" id="results-area" style="display: none;">
+                        <h3>Results</h3>
+                        <div class="result-value" id="result-value">--</div>
+                        <div class="result-explanation" id="result-explanation"></div>
+                    </div>
+                </div>
+
+                <!-- Visualization Area (Used for some tools like half life) -->
+                <div class="chart-card card" id="chart-area" style="display: none;">
+                    <h3>Visualization</h3>
+                    <canvas id="vizChart"></canvas>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="/app.js"></script>
+</body>
+</html>

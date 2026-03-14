@@ -1,23 +1,13 @@
-version: "3.8"
 services:
-  app:
-    image: registry.rodydavis.dev/rad-calc:latest
+  rad-calc:
+    build:
+      context: .
+      dockerfile: Dockerfile
     ports:
-      - target: 8181
-    deploy:
-      replicas: 1
-      restart_policy:
-        condition: on-failure
-        delay: 5s
-        max_attempts: 3
-        window: 120s
-      update_config:
-        parallelism: 1
-        delay: 10s
-        order: stop-first
-        failure_action: rollback
-      # healthcheck: # optional, recommended since v0.10.0
-      #   test: wget --no-verbose --tries=1 --spider http://0.0.0.0:8181 || exit 1
-      #   interval: 5s
-      #   timeout: 5s
-      #   retries: 5
+      - "8080:8080"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8080/"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
